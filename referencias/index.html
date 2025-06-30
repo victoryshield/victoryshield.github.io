@@ -1,0 +1,721 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Escudo do Mestre Digital - 3DeT Victory</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="shortcut icon" href="/3det/favicon.ico" type="image/x-icon">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f59e0b">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+</head>
+
+<body class="antialiased">
+
+  <div id="tooltip"></div>
+
+  <div class="container mx-auto p-4 sm:p-6 md:p-8">
+
+    <header class="text-center mb-8 border-b-4 border-amber-500 pb-4">
+      <h1 class="text-3xl sm:text-4xl font-bold tracking-wider text-primary">Escudo do Mestre Digital</h1>
+      <p class="text-lg text-secondary uppercase tracking-widest mt-1">3DeT Victory</p>
+    </header>
+
+    <nav id="navigation" class="grid grid-cols-5 gap-2 mb-8">
+      <button data-target="basico"
+        class="nav-btn flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm">
+        <i class="fa-solid fa-dice-d6 fa-fw"></i>
+        <span class="hidden sm:inline">Testes</span>
+      </button>
+      <button data-target="combate"
+        class="nav-btn flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm">
+        <i class="fa-solid fa-hand-fist fa-fw"></i>
+        <span class="hidden sm:inline">Combate</span>
+      </button>
+      <button data-target="manobras"
+        class="nav-btn flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm">
+        <i class="fa-solid fa-person-running fa-fw"></i>
+        <span class="hidden sm:inline">Manobras</span>
+      </button>
+      <button data-target="regras"
+        class="nav-btn flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm">
+        <i class="fa-solid fa-book fa-fw"></i>
+        <span class="hidden sm:inline">Regras</span>
+      </button>
+      <button data-target="mestrando"
+        class="nav-btn flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm">
+        <i class="fa-solid fa-hat-wizard fa-fw"></i>
+        <span class="hidden sm:inline">Mestrando</span>
+      </button>
+      <button data-target="personagens"
+        class="nav-btn flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm">
+        <i class="fa-solid fa-users fa-fw"></i>
+        <span class="hidden sm:inline">Personagens</span>
+      </button>
+      <button data-target="npcs"
+        class="nav-btn flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm">
+        <i class="fa-solid fa-address-book fa-fw"></i>
+        <span class="hidden sm:inline">NPCs</span>
+      </button>
+      <button data-target="bestiario"
+        class="nav-btn flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm">
+        <i class="fa-solid fa-dragon fa-fw"></i>
+        <span class="hidden sm:inline">Bestiário</span>
+      </button>
+      <button data-target="sessao"
+        class="nav-btn flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm">
+        <i class="fa-solid fa-scroll fa-fw"></i>
+        <span class="hidden sm:inline">Sessão Atual</span>
+      </button>
+      <button data-target="campanha"
+        class="nav-btn flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm">
+        <i class="fa-solid fa-book-open fa-fw"></i>
+        <span class="hidden sm:inline">Campanha</span>
+      </button>
+    </nav>
+
+
+    <main id="content">
+      <section id="basico" class="content-section">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+          <div class="lg:col-span-2">
+            <div class="info-card h-full p-6 rounded-lg shadow">
+              <h2 class="text-xl font-bold mb-4 text-accent flex items-center gap-x-2">
+                <i class="fa-solid fa-dice-d6 fa-fw"></i>
+                <span>A Mecânica Central: 3 Dados e Teste</span>
+              </h2>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                  <tbody>
+                    <tr class="border-b">
+                      <td class="py-2 font-semibold flex items-center gap-x-2"><i
+                          class="fa-solid fa-calculator fa-fw text-slate-500"></i><span>Fórmula do Teste</span></td>
+                      <td class="py-2">Atributo + (1d6 a 3d6) vs. Meta</td>
+                    </tr>
+                    <tr class="border-b">
+                      <td class="py-2 font-semibold flex items-center gap-x-2"><i
+                          class="fa-solid fa-dice-one fa-fw text-slate-500"></i><span>1D (Base)</span></td>
+                      <td class="py-2">Rolagem padrão.</td>
+                    </tr>
+                    <tr class="border-b">
+                      <td class="py-2 font-semibold flex items-center gap-x-2"><i
+                          class="fa-solid fa-circle-plus fa-fw text-green-600"></i><span>+1D (Perícia)</span></td>
+                      <td class="py-2">Se possui a perícia adequada.</td>
+                    </tr>
+                    <tr class="border-b">
+                      <td class="py-2 font-semibold flex items-center gap-x-2"><i
+                          class="fa-solid fa-circle-plus fa-fw text-green-600"></i><span>+1D (Ganho)</span></td>
+                      <td class="py-2">Vantagem tática, uso de 1 PA, etc.</td>
+                    </tr>
+                    <tr class="border-b">
+                      <td class="py-2 font-semibold flex items-center gap-x-2"><i
+                          class="fa-solid fa-circle-minus fa-fw text-red-600"></i><span>-1D (Perda)</span></td>
+                      <td class="py-2">Desvantagem tática, terreno ruim, etc.</td>
+                    </tr>
+                    <tr class="border-b">
+                      <td class="py-2 font-semibold flex items-center gap-x-2"><i
+                          class="fa-solid fa-star fa-fw text-yellow-500"></i><span>Acerto Crítico</span></td>
+                      <td class="py-2">Resultado 6 no dado. Permite <strong>somar o Atributo de novo</strong>.</td>
+                    </tr>
+                    <tr>
+                      <td class="py-2 font-semibold flex items-center gap-x-2"><i
+                          class="fa-solid fa-skull-crossbones fa-fw text-slate-500"></i><span>Falha Crítica</span></td>
+                      <td class="py-2">Todos os dados resultam 1. Consequência narrativa.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-card p-6 rounded-lg shadow">
+            <h2 class="text-xl font-bold mb-4 text-accent flex items-center gap-x-2">
+              <i class="fa-solid fa-cubes fa-fw"></i>
+              <span>Rolador de Dados</span>
+            </h2>
+            <div class="flex justify-around mb-4">
+              <button onclick="rollDice(1)"
+                class="w-16 h-16 bg-slate-700 text-white font-bold rounded-lg text-2xl shadow-md hover:bg-slate-600 transition">1D</button>
+              <button onclick="rollDice(2)"
+                class="w-16 h-16 bg-slate-700 text-white font-bold rounded-lg text-2xl shadow-md hover:bg-slate-600 transition">2D</button>
+              <button onclick="rollDice(3)"
+                class="w-16 h-16 bg-slate-700 text-white font-bold rounded-lg text-2xl shadow-md hover:bg-slate-600 transition">3D</button>
+            </div>
+            <div id="dice-result"
+              class="dynamic-panel p-4 rounded-lg text-center min-h-[100px] flex flex-col justify-center">
+              <p class="text-sm text-secondary">Clique para rolar</p>
+            </div>
+          </div>
+
+          <div class="info-card p-6 rounded-lg shadow">
+            <h2 class="text-xl font-bold mb-4 text-accent flex items-center gap-x-2">
+              <i class="fa-solid fa-bullseye fa-fw"></i>
+              <span>Metas de Teste</span>
+            </h2>
+            <table class="w-full text-left">
+              <tbody>
+                <tr class="border-b">
+                  <td class="py-2">Fácil</td>
+                  <td class="py-2 text-right font-semibold">6</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="py-2">Médio</td>
+                  <td class="py-2 text-right font-semibold">9</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="py-2">Difícil</td>
+                  <td class="py-2 text-right font-semibold">12</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="py-2">Muito Difícil</td>
+                  <td class="py-2 text-right font-semibold">15</td>
+                </tr>
+                <tr>
+                  <td class="py-2">Lendário</td>
+                  <td class="py-2 text-right font-semibold">18+</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="info-card p-6 rounded-lg shadow">
+            <h2 class="text-xl font-bold mb-4 text-accent flex items-center gap-x-2">
+              <i class="fa-solid fa-user-pen fa-fw"></i>
+              <span>Atributos & Recursos</span>
+            </h2>
+            <table class="w-full text-left">
+              <tbody>
+                <tr class="border-b">
+                  <td class="py-2 flex items-center gap-x-2"><i
+                      class="fa-solid fa-hand-fist fa-fw w-4 text-center text-slate-500"></i><span>Poder (P)</span></td>
+                  <td class="py-2 text-right">Força, intimidação, carisma.</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="py-2 flex items-center gap-x-2"><i
+                      class="fa-solid fa-brain fa-fw w-4 text-center text-slate-500"></i><span>Habilidade (H)</span>
+                  </td>
+                  <td class="py-2 text-right">Agilidade, inteligência, mira.</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="py-2 flex items-center gap-x-2"><i
+                      class="fa-solid fa-shield-halved fa-fw w-4 text-center text-slate-500"></i><span>Resistência
+                      (R)</span></td>
+                  <td class="py-2 text-right">Vigor, força de vontade.</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="py-2 font-semibold flex items-center gap-x-2"><i
+                      class="fa-solid fa-heart-pulse fa-fw w-4 text-center text-slate-500"></i><span>Pontos de Vida
+                      (PV)</span></td>
+                  <td class="py-2 text-right">R x 5</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="py-2 font-semibold flex items-center gap-x-2"><i
+                      class="fa-solid fa-wand-magic-sparkles fa-fw w-4 text-center text-slate-500"></i><span>Pontos de
+                      Mana (PM)</span></td>
+                  <td class="py-2 text-right">H x 5</td>
+                </tr>
+                <tr>
+                  <td class="py-2 font-semibold flex items-center gap-x-2"><i
+                      class="fa-solid fa-bolt fa-fw w-4 text-center text-slate-500"></i><span>Pontos de Ação (PA)</span>
+                  </td>
+                  <td class="py-2 text-right">Poder (P)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="info-card p-6 rounded-lg shadow">
+            <h2 class="text-xl font-bold mb-4 text-accent flex items-center gap-x-2">
+              <i class="fa-solid fa-bed fa-fw"></i>
+              <span>Recuperação</span>
+            </h2>
+            <table class="w-full text-left">
+              <tbody>
+                <tr class="border-b">
+                  <td class="py-2 font-semibold">Descanso (8h)</td>
+                  <td class="py-2 text-right">Recupera todos os PV, PM e PA.</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="py-2 font-semibold">Descanso Curto (2h)</td>
+                  <td class="py-2 text-right">Recupera PV=R e PM=H. Não recupera PA.</td>
+                </tr>
+                <tr>
+                  <td class="py-2 font-semibold">Lugar Ruim</td>
+                  <td class="py-2 text-right">Recupera metade dos PV e PM.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="combate" class="content-section">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+          <div class="info-card lg:col-span-1 p-6 rounded-lg shadow">
+            <h2 class="text-xl font-bold mb-4 text-accent flex items-center gap-x-2">
+              <i class="fa-solid fa-list-ol fa-fw"></i>
+              <span>Ordem de Combate</span>
+            </h2>
+            <ol class="space-y-3">
+              <li class="flex items-start gap-x-2">
+                <i class="fa-solid fa-stopwatch fa-fw mt-1 text-slate-500"></i>
+                <span><strong>Iniciativa:</strong> Teste de <strong>Habilidade</strong>. Personagens agem em ordem
+                  decrescente.</span>
+              </li>
+              <li class="flex items-start gap-x-2">
+                <i class="fa-solid fa-rotate fa-fw mt-1 text-slate-500"></i>
+                <span><strong>Turno:</strong> <strong>1 Ação</strong> (atacar, usar Vantagem, etc.) e <strong>1
+                    Movimento</strong>.</span>
+              </li>
+              <li class="flex items-start gap-x-2">
+                <i class="fa-solid fa-right-left fa-fw mt-1 text-slate-500"></i>
+                <span><strong>Opções:</strong> Pode trocar <strong>Ação</strong> por <strong>Movimento</strong> extra,
+                  mas não o contrário.</span>
+              </li>
+            </ol>
+          </div>
+
+          <div class="info-card lg:col-span-2 p-6 rounded-lg shadow">
+            <h2 class="text-xl font-bold mb-4 text-accent flex items-center gap-x-2">
+              <i class="fa-solid fa-gavel fa-fw"></i>
+              <span>Ataque e Defesa</span>
+            </h2>
+            <table class="w-full text-left">
+              <thead class="table-header">
+                <tr>
+                  <th class="p-2 rounded-l-lg">Ação</th>
+                  <th class="p-2 rounded-r-lg">Detalhes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-b">
+                  <td class="p-2 font-semibold flex items-center gap-x-2"><i
+                      class="fa-solid fa-khanda fa-fw text-slate-500"></i><span>Ataque (Padrão)</span></td>
+                  <td class="p-2">Teste de <strong>Poder</strong> (corpo a corpo) ou <strong>Habilidade</strong> (à
+                    distância).</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="p-2 font-semibold flex items-center gap-x-2"><i
+                      class="fa-solid fa-shield-halved fa-fw text-slate-500"></i><span>Defesa (Padrão)</span></td>
+                  <td class="p-2">Teste de <strong>Resistência</strong>.</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="p-2 font-semibold flex items-center gap-x-2"><i
+                      class="fa-solid fa-heart-crack fa-fw text-red-600"></i><span>Dano</span></td>
+                  <td class="p-2">Total do Ataque - Total da Defesa.</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="p-2 font-semibold flex items-center gap-x-2">
+                    <i class="fa-solid fa-heart fa-fw text-primary"></i>
+                    <span>Dano Mínimo</span>
+                  </td>
+                  <td class="p-2">Todo ataque bem-sucedido causa pelo menos <strong>1 PV</strong>.</td>
+                </tr>
+                <tr>
+                  <td class="p-2 font-semibold flex items-center gap-x-2"><i
+                      class="fa-solid fa-shield-heart fa-fw text-green-600"></i><span>Defesa Perfeita</span></td>
+                  <td class="p-2">Defesa dobra o valor do Ataque. Dano é <strong>zero</strong>.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="info-card p-6 rounded-lg shadow">
+            <h2 class="text-xl font-bold mb-4 text-accent flex items-center gap-x-2">
+              <i class="fa-solid fa-shoe-prints fa-fw"></i>
+              <span>Movimento & Distâncias</span>
+            </h2>
+            <table class="w-full text-left">
+              <tbody>
+                <tr class="border-b">
+                  <td class="p-2 font-semibold flex items-center gap-x-2"><i
+                      class="fa-solid fa-ruler-horizontal fa-fw text-slate-500"></i><span>Distâncias</span></td>
+                  <td class="p-2 text-right">Perto → Longe → Muito Longe → Fora de Alcance</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="p-2 font-semibold flex items-center gap-x-2"><i
+                      class="fa-solid fa-person-running fa-fw text-slate-500"></i><span>Movimento</span></td>
+                  <td class="p-2 text-right">1 passo de distância por 1 movimento.</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="p-2 font-semibold flex items-center gap-x-2"><i
+                      class="fa-solid fa-hand-fist fa-fw text-slate-500"></i><span>Ataque Corpo a Corpo</span></td>
+                  <td class="p-2 text-right">Apenas em alvos Perto.</td>
+                </tr>
+                <tr>
+                  <td class="p-2 font-semibold flex items-center gap-x-2"><i
+                      class="fa-solid fa-crosshairs fa-fw text-slate-500"></i><span>Ataque à Distância</span></td>
+                  <td class="p-2 text-right"><strong>Perda</strong> contra alvos <strong>Longe</strong> (sem Vantagem
+                    Alcance).</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="info-card lg:col-span-2 p-6 rounded-lg shadow">
+            <h2 class="text-xl font-bold mb-4 text-accent flex items-center gap-x-2">
+              <i class="fa-solid fa-skull fa-fw"></i>
+              <span>Derrota e Morte</span>
+            </h2>
+            <table class="w-full text-left">
+              <thead class="table-header">
+                <tr>
+                  <th class="p-2 rounded-l-lg">Condição</th>
+                  <th class="p-2 rounded-r-lg">Efeito</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-b">
+                  <td class="p-2 font-semibold flex items-center gap-x-2"><i
+                      class="fa-solid fa-face-dizzy fa-fw text-slate-500"></i><span>0 PV (Derrotado)</span></td>
+                  <td class="p-2">Sofre <strong>Perda</strong> em todos os testes até o fim da cena.</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="p-2 font-semibold flex items-center gap-x-2">
+                    <i class="fa-solid fa-skull fa-fw text-slate-500"></i>
+                    <span>Teste de Morte</span>
+                  </td>
+                  <td class="p-2">Se com 0 PV sofre dano, faz Teste de <strong>Resistência (Meta 9)</strong>.</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="p-2 font-semibold flex items-center gap-x-2"><i
+                      class="fa-solid fa-eye fa-fw text-blue-500"></i><span>Sucesso (12+)</span></td>
+                  <td class="p-2"><strong>Caído:</strong> Consciente, mas não pode agir.</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="p-2 font-semibold flex items-center gap-x-2"><i
+                      class="fa-solid fa-eye-slash fa-fw text-slate-500"></i><span>Sucesso (8-11)</span></td>
+                  <td class="p-2"><strong>Inconsciente:</strong> Desmaia por 1 hora.</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="p-2 font-semibold flex items-center gap-x-2"><i
+                      class="fa-solid fa-hourglass-half fa-fw text-orange-500"></i><span>Falha (6-7)</span></td>
+                  <td class="p-2"><strong>Quase Morto:</strong> Morre em 1d rodadas se não for estabilizado.</td>
+                </tr>
+                <tr>
+                  <td class="p-2 font-semibold flex items-center gap-x-2"><i
+                      class="fa-solid fa-skull-crossbones fa-fw text-red-600"></i><span>Falha (5 ou menos)</span></td>
+                  <td class="p-2"><strong>Morto.</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="manobras" class="content-section">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+          <div class="info-card p-6 rounded-lg shadow">
+            <h2 class="text-xl font-bold mb-4 text-accent flex items-center gap-x-2">
+              <i class="fa-solid fa-star-of-life fa-fw"></i>
+              <span>Condições Comuns</span>
+            </h2>
+            <dl class="space-y-4">
+              <div>
+                <dt class="font-semibold flex items-center gap-x-2"><i
+                    class="fa-solid fa-person-falling fa-fw text-slate-500"></i><span>Caído</span></dt>
+                <dd class="text-sm text-secondary pl-6"><strong>Perda</strong> em todos os testes. Gasta um
+                  <strong>Movimento</strong> para se levantar.
+                </dd>
+              </div>
+              <div>
+                <dt class="font-semibold flex items-center gap-x-2"><i
+                    class="fa-solid fa-circle-question fa-fw text-slate-500"></i><span>Confuso</span></dt>
+                <dd class="text-sm text-secondary pl-6">Alvos de perícias/vantagens são escolhidos ao acaso.</dd>
+              </div>
+              <div>
+                <dt class="font-semibold flex items-center gap-x-2"><i
+                    class="fa-solid fa-face-dizzy fa-fw text-slate-500"></i><span>Derrotado</span></dt>
+                <dd class="text-sm text-secondary pl-6"><strong>Perda</strong> em todos os testes e não consegue acertos
+                  críticos.</dd>
+              </div>
+              <div>
+                <dt class="font-semibold flex items-center gap-x-2"><i
+                    class="fa-solid fa-user-slash fa-fw text-slate-500"></i><span>Desprevenido</span></dt>
+                <dd class="text-sm text-secondary pl-6"><strong>Perda</strong> nos testes de defesa.</dd>
+              </div>
+              <div>
+                <dt class="font-semibold flex items-center gap-x-2"><i
+                    class="fa-solid fa-user-xmark fa-fw text-slate-500"></i><span>Indefeso</span></dt>
+                <dd class="text-sm text-secondary pl-6">Não rola dados na defesa. Ataques contra o alvo têm
+                  <strong>Ganho</strong>.
+                </dd>
+              </div>
+              <div>
+                <dt class="font-semibold flex items-center gap-x-2"><i
+                    class="fa-solid fa-handcuffs fa-fw text-slate-500"></i><span>Paralisado</span></dt>
+                <dd class="text-sm text-secondary pl-6">Fica <strong>Indefeso</strong> e não pode realizar ações ou
+                  movimentos.</dd>
+              </div>
+            </dl>
+          </div>
+
+          <div class="space-y-6">
+            <div class="info-card p-6 rounded-lg shadow">
+              <h2 class="text-xl font-bold mb-4 text-accent flex items-center gap-x-2">
+                <i class="fa-solid fa-person-burst fa-fw"></i>
+                <span>Manobras de Combate (1 Ação)</span>
+              </h2>
+              <dl class="space-y-4">
+                <div>
+                  <dt class="font-semibold flex items-center gap-x-2"><i
+                      class="fa-solid fa-khanda fa-fw text-slate-500"></i><span>Ataque Total</span></dt>
+                  <dd class="text-sm text-secondary pl-6">Recebe <strong>Ganho</strong> no ataque, mas fica
+                    <strong>Desprevenido</strong> até o próximo turno.
+                  </dd>
+                </div>
+                <div>
+                  <dt class="font-semibold flex items-center gap-x-2"><i
+                      class="fa-solid fa-shield-halved fa-fw text-slate-500"></i><span>Defesa Total</span></dt>
+                  <dd class="text-sm text-secondary pl-6">Recebe <strong>Ganho</strong> em todas as jogadas de defesa
+                    até seu próximo turno.</dd>
+                </div>
+                <div>
+                  <dt class="font-semibold flex items-center gap-x-2"><i
+                      class="fa-solid fa-hand-rock fa-fw text-slate-500"></i><span>Agarrão</span></dt>
+                  <dd class="text-sm text-secondary pl-6">Teste de <strong>Poder</strong> vs. <strong>Poder</strong>.
+                    Vítima fica imobilizada e com <strong>Perda</strong> para atacar.</dd>
+                </div>
+                <div>
+                  <dt class="font-semibold flex items-center gap-x-2"><i
+                      class="fa-solid fa-person-running fa-fw text-slate-500"></i><span>Fuga</span></dt>
+                  <dd class="text-sm text-secondary pl-6">Teste de <strong>Habilidade (Meta 6 + nº de
+                      oponentes)</strong> para escapar.</dd>
+                </div>
+              </dl>
+            </div>
+
+            <div class="info-card p-6 rounded-lg shadow">
+              <h2 class="text-xl font-bold mb-4 text-accent flex items-center gap-x-2">
+                <i class="fa-solid fa-bolt-lightning fa-fw"></i>
+                <span>Usando Pontos de Ação (PA)</span>
+              </h2>
+              <dl class="space-y-4">
+                <div>
+                  <dt class="font-semibold flex items-center gap-x-2"><i
+                      class="fa-solid fa-circle-plus fa-fw text-green-600"></i><span>1 PA</span></dt>
+                  <dd class="text-sm text-secondary pl-6">Receber um <strong>Ganho</strong> ou anular uma
+                    <strong>Perda</strong> em um teste.
+                  </dd>
+                </div>
+                <div>
+                  <dt class="font-semibold flex items-center gap-x-2"><i
+                      class="fa-solid fa-plus-minus fa-fw text-slate-500"></i><span>1 PA (+Regras)</span></dt>
+                  <dd class="text-sm text-secondary pl-6">Recuperar 10 PV ou 10 PM. Pedir uma dica ao Mestre.</dd>
+                </div>
+                <div>
+                  <dt class="font-semibold flex items-center gap-x-2"><i
+                      class="fa-solid fa-scale-balanced fa-fw text-slate-500"></i><span>Custo da Vantagem
+                      (+Regras)</span></dt>
+                  <dd class="text-sm text-secondary pl-6">Usar uma Vantagem que não possui por uma vez.</dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="personagens" class="content-section">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="md:col-span-1 info-card p-4 rounded-lg shadow max-h-[600px] overflow-y-auto">
+            <h2 class="text-xl font-bold mb-4 text-accent flex items-center gap-x-2">
+              <i class="fa-solid fa-users fa-fw"></i>
+              <span>Jogadores</span>
+            </h2>
+            <ul id="player-list" class="space-y-1"></ul>
+          </div>
+          <div id="player-details" class="md:col-span-2 info-card p-6 rounded-lg shadow min-h-[400px]">
+            <p class="text-secondary text-center mt-8">Selecione um personagem da lista para ver sua ficha.</p>
+          </div>
+        </div>
+      </section>
+      <section id="regras" class="content-section">
+        <div class="info-card p-4 sm:p-6 rounded-lg shadow">
+
+          <div class="relative mb-6">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+              <i class="fa-solid fa-search text-slate-400"></i>
+            </span>
+            <input type="search" id="regras-search-input" placeholder="Buscar por nome em todas as categorias..."
+              class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 dark:bg-slate-700 dark:border-slate-600 dark:placeholder-slate-400">
+          </div>
+
+          <div id="regras-nav" class="flex flex-wrap justify-center gap-2 mb-6 border-b-2 border-amber-500 pb-4">
+          </div>
+
+          <div id="regras-content">
+          </div>
+
+          <div id="regras-search-results" class="hidden">
+          </div>
+
+        </div>
+      </section>
+      <section id="bestiario" class="content-section">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="md:col-span-1 info-card p-4 rounded-lg shadow max-h-[600px] overflow-y-auto">
+            <h2 class="text-xl font-bold mb-4 text-accent flex items-center gap-x-2">
+              <i class="fa-solid fa-dragon fa-fw"></i>
+              <span>Catálogo de Inimigos</span>
+            </h2>
+            <ul id="bestiary-list" class="space-y-1"></ul>
+          </div>
+          <div id="bestiary-details" class="md:col-span-2 info-card p-6 rounded-lg shadow min-h-[400px]">
+            <p class="text-secondary text-center mt-8">Selecione um inimigo da lista para ver seus detalhes.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="mestrando" class="content-section">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+          <div class="info-card p-6 rounded-lg shadow">
+            <h2 class="text-xl font-bold mb-4 text-accent flex items-center gap-x-2">
+              <i class="fa-solid fa-layer-group fa-fw"></i>
+              <span>Escalas de Poder</span>
+            </h2>
+            <p class="mb-4 text-sm text-secondary">Efeitos por nível de diferença entre o personagem de escala superior
+              e o inferior.</p>
+            <ul class="space-y-3">
+              <li class="flex items-start gap-x-2"><i
+                  class="fa-solid fa-stairs fa-fw mt-1 text-slate-500"></i><span><strong>Níveis:</strong> Ningen → Sugoi
+                  → Kiodai → Kami</span></li>
+              <li class="flex items-start gap-x-2"><i
+                  class="fa-solid fa-circle-plus fa-fw mt-1 text-green-600"></i><span>Recebe <strong>+1 Ganho</strong>
+                  por nível.</span></li>
+              <li class="flex items-start gap-x-2"><i
+                  class="fa-solid fa-star fa-fw mt-1 text-yellow-500"></i><span>Recebe <strong>+1 crítico
+                    automático</strong> por nível.</span></li>
+              <li class="flex items-start gap-x-2"><i
+                  class="fa-solid fa-shield-heart fa-fw mt-1 text-blue-500"></i><span>A defesa é <strong>sempre
+                    perfeita</strong> (dano mínimo de 1 PV é ignorado).</span></li>
+              <li class="flex items-start gap-x-2"><i
+                  class="fa-solid fa-exclamation-triangle fa-fw mt-1 text-orange-500"></i><span>Um crítico no dado pode
+                  anular temporariamente a vantagem da escala.</span></li>
+            </ul>
+          </div>
+
+          <div class="info-card p-6 rounded-lg shadow">
+            <h2 class="text-xl font-bold mb-4 text-accent flex items-center gap-x-2">
+              <i class="fa-solid fa-award fa-fw"></i>
+              <span>Recompensas de XP</span>
+            </h2>
+            <table class="w-full text-left">
+              <tbody>
+                <tr class="border-b">
+                  <td class="p-2 font-semibold flex items-center gap-x-2"><i
+                      class="fa-solid fa-check fa-fw text-slate-500"></i><span>Objetivo Menor</span></td>
+                  <td class="p-2 text-right">1 XP</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="p-2 font-semibold flex items-center gap-x-2"><i
+                      class="fa-solid fa-trophy fa-fw text-slate-500"></i><span>Objetivo Maior</span></td>
+                  <td class="p-2 text-right">5 XP</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="p-2 font-semibold flex items-center gap-x-2"><i
+                      class="fa-solid fa-masks-theater fa-fw text-slate-500"></i><span>Interpretação</span></td>
+                  <td class="p-2 text-right">+1 XP / sessão</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="p-2 font-semibold flex items-center gap-x-2"><i
+                      class="fa-solid fa-flag-checkered fa-fw text-slate-500"></i><span>Marco de Campanha</span></td>
+                  <td class="p-2 text-right">+10 XP</td>
+                </tr>
+                <tr>
+                  <td class="p-2 font-semibold text-accent flex items-center gap-x-2"><i
+                      class="fa-solid fa-right-left fa-fw"></i><span>Conversão</span></td>
+                  <td class="p-2 text-right text-accent">10 XP = 1 Ponto de Personagem</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="lg:col-span-2 info-card p-6 rounded-lg shadow">
+            <h2 class="text-xl font-bold mb-4 text-accent flex items-center gap-x-2">
+              <i class="fa-solid fa-user-plus fa-fw"></i>
+              <span>Gerador Rápido de NPCs</span>
+            </h2>
+            <div class="text-center">
+              <button onclick="generateNPC()"
+                class="px-6 py-3 bg-amber-500 text-white font-semibold rounded-lg shadow-md hover:bg-amber-600 transition mb-4 flex items-center justify-center gap-x-2 mx-auto">
+                <i class="fa-solid fa-dice"></i>
+                <span>Gerar NPC Aleatório</span>
+              </button>
+              <div id="npc-result"
+                class="dynamic-panel p-4 rounded-lg min-h-[120px] flex flex-col items-center justify-center">
+                <p class="text-sm text-secondary">Clique para gerar uma ideia de NPC.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section id="sessao" class="content-section">
+        <div id="session-content" class="space-y-6">
+          <p class="text-secondary text-center">Carregando dados da sessão...</p>
+        </div>
+      </section>
+      <section id="npcs" class="content-section">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="md:col-span-1 info-card p-4 rounded-lg shadow max-h-[600px] overflow-y-auto">
+            <h2 class="text-xl font-bold mb-4 text-accent flex items-center gap-x-2">
+              <i class="fa-solid fa-address-book fa-fw"></i>
+              <span>Personagens do Mestre</span>
+            </h2>
+            <ul id="npc-list" class="space-y-1"></ul>
+          </div>
+          <div id="npc-details" class="md:col-span-2 info-card p-6 rounded-lg shadow min-h-[400px]">
+            <p class="text-secondary text-center mt-8">Selecione um NPC da lista para ver seus detalhes.</p>
+          </div>
+        </div>
+      </section>
+      <section id="campanha" class="content-section">
+        <div class="info-card p-6 rounded-lg shadow">
+          <h2 class="text-2xl font-bold mb-4 text-accent text-center flex items-center justify-center gap-x-2">
+            <i class="fa-solid fa-book-open"></i>
+            <span>Diário de Campanha</span>
+          </h2>
+
+          <div id="book-content" class="book-page rounded-md shadow-inner mb-4">
+            <p class="text-secondary">Carregando aventura...</p>
+          </div>
+
+          <div class="flex justify-between items-center">
+            <button id="prev-page-btn" class="nav-btn px-4 py-2 rounded-lg shadow-sm flex items-center gap-x-2"
+              disabled>
+              <i class="fa-solid fa-arrow-left"></i>
+              <span>Anterior</span>
+            </button>
+
+            <span id="page-indicator" class="text-secondary font-semibold"></span>
+
+            <button id="next-page-btn" class="nav-btn px-4 py-2 rounded-lg shadow-sm flex items-center gap-x-2"
+              disabled>
+              <span>Próxima</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="script.js" defer></script>
+</body>
+
+</html>
