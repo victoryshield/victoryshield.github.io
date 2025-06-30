@@ -86,7 +86,8 @@ import {
   faUserXmark,
   faUsers,
   faWandMagicSparkles,
-  faWandSparkles
+  faWandSparkles,
+  faPlus
 } from '@fortawesome/free-solid-svg-icons';
 
 /* add icons to the library */
@@ -164,7 +165,8 @@ library.add(
   faUserXmark,
   faUsers,
   faWandMagicSparkles,
-  faWandSparkles
+  faWandSparkles,
+  faPlus
 );
 
 const pinia = createPinia();

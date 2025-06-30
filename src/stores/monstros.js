@@ -16,7 +16,7 @@ export const useMonstrosStore = defineStore('monstros', {
         let query = supabase
           .from('monstros')
           .select('id, name, archetype, concept, Poder, Habilidade, Resistencia, Pontos_Acao, Pontos_Mana, Pontos_Vida, image, campaign_id');
-        
+
         if (campaignId) {
           query = query.eq('campaign_id', campaignId);
         }
@@ -40,7 +40,7 @@ export const useMonstrosStore = defineStore('monstros', {
         }
         const { data, error } = await supabase
           .from('monstros')
-          .insert([{ ...monstroData, user_id: authStore.user.id }])
+          .insert([monstroData])
           .select();
         if (error) throw error;
         this.monstros.push(data[0]);
@@ -60,7 +60,7 @@ export const useMonstrosStore = defineStore('monstros', {
         }
         const { data, error } = await supabase
           .from('monstros')
-          .update({ ...monstroData, user_id: authStore.user.id })
+          .update(monstroData)
           .eq('id', monstroData.id)
           .select();
         if (error) throw error;
@@ -78,12 +78,17 @@ export const useMonstrosStore = defineStore('monstros', {
     async uploadImage(file) {
       this.loading = true;
       try {
+        const authStore = useAuthStore(); // Adicionado
+        if (!authStore.user) { // Adicionado
+          throw new Error('User not authenticated.'); // Adicionado
+        }
         const fileExt = file.name.split('.').pop();
         const fileName = `${uuidv4()}.${fileExt}`;
-        const filePath = `monstros/${fileName}`;
+        // Caminho do arquivo modificado para incluir o UID do usuário
+        const filePath = `${authStore.user.id}/monstros/${fileName}`; // MODIFICADO
 
         const { error: uploadError } = await supabase.storage
-          .from('images') // Substitua 'monstros_images' pelo nome do seu bucket no Supabase Storage
+          .from('images')
           .upload(filePath, file, { cacheControl: '3600', upsert: false });
 
         if (uploadError) throw uploadError;

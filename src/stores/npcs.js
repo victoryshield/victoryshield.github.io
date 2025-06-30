@@ -16,7 +16,7 @@ export const useNpcsStore = defineStore('npcs', {
         let query = supabase
           .from('npcs')
           .select('id, name, archetype, concept, Poder, Habilidade, Resistencia, Pontos_Acao, Pontos_Mana, Pontos_Vida, image, campaign_id');
-        
+
         if (campaignId) {
           query = query.eq('campaign_id', campaignId);
         }
@@ -40,7 +40,7 @@ export const useNpcsStore = defineStore('npcs', {
         }
         const { data, error } = await supabase
           .from('npcs')
-          .insert([{ ...npcData, user_id: authStore.user.id }])
+          .insert([npcData])
           .select();
         if (error) throw error;
         this.npcs.push(data[0]);
@@ -60,7 +60,7 @@ export const useNpcsStore = defineStore('npcs', {
         }
         const { data, error } = await supabase
           .from('npcs')
-          .update({ ...npcData, user_id: authStore.user.id })
+          .update(npcData)
           .eq('id', npcData.id)
           .select();
         if (error) throw error;
@@ -78,12 +78,17 @@ export const useNpcsStore = defineStore('npcs', {
     async uploadImage(file) {
       this.loading = true;
       try {
+        const authStore = useAuthStore(); // Adicionado
+        if (!authStore.user) { // Adicionado
+          throw new Error('User not authenticated.'); // Adicionado
+        }
         const fileExt = file.name.split('.').pop();
         const fileName = `${uuidv4()}.${fileExt}`;
-        const filePath = `npcs/${fileName}`;
+        // Caminho do arquivo modificado para incluir o UID do usuário
+        const filePath = `${authStore.user.id}/npcs/${fileName}`; // MODIFICADO
 
         const { error: uploadError } = await supabase.storage
-          .from('images') // Substitua 'npcs_images' pelo nome do seu bucket no Supabase Storage
+          .from('images')
           .upload(filePath, file, { cacheControl: '3600', upsert: false });
 
         if (uploadError) throw uploadError;

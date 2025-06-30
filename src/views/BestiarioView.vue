@@ -28,12 +28,10 @@
     </div>
   </section>
 
-  <MonstroForm
+  <EditEntityForm
     v-if="showMonstroForm"
-    :monstro="monstroToEdit"
-    @save="handleSaveMonstro"
-    @close="handleCloseForm"
-  />
+    :entity-data="monstroToEdit"
+    entity-type="monstro" @close="handleCloseForm" />
 </template>
 
 <script setup>
@@ -41,7 +39,8 @@ import { onMounted, ref, computed, watch } from 'vue';
 import { useMonstrosStore } from '../stores/monstros';
 import { useAuthStore } from '../stores/auth';
 import { useCampaignsStore } from '../stores/campaigns';
-import MonstroForm from '../components/MonstroForm.vue';
+// Importe o novo componente genérico
+import EditEntityForm from '../components/EditEntityForm.vue';
 import EntityListView from '../components/EntityListView.vue';
 import EntityDetailsView from '../components/EntityDetailsView.vue';
 
@@ -101,8 +100,8 @@ const deleteMonstro = async (id) => {
       await monstrosStore.deleteMonstro(id);
       message.value = 'Monstro excluído com sucesso!';
       messageType.value = 'success';
-      await monstrosStore.fetchMonstros(selectedCampaignId.value); // Recarrega a lista
-      selectedMonstro.value = null; // Limpa a seleção
+      // Removido o fetch aqui, será feito no handleCloseForm
+      selectedMonstro.value = null;
       setTimeout(() => { message.value = ''; messageType.value = ''; }, 3000);
     } catch (error) {
       message.value = `Erro ao excluir monstro: ${error.message}`;
@@ -112,38 +111,33 @@ const deleteMonstro = async (id) => {
   }
 };
 
-const handleSaveMonstro = async (monstroData) => {
-  try {
-    if (monstroData.image instanceof File) {
-      const imageUrl = await monstrosStore.uploadImage(monstroData.image);
-      monstroData.image = imageUrl;
-    } else if (monstroData.image === null) {
-      monstroData.image = null;
-    }
+// Removido handleSaveMonstro, pois a lógica de save está no EditEntityForm
 
-    if (monstroData.id) {
-      await monstrosStore.updateMonstro(monstroData);
-      message.value = 'Monstro atualizado com sucesso!';
-      messageType.value = 'success';
-    } else {
-      await monstrosStore.addMonstro(monstroData);
-      message.value = 'Monstro adicionado com sucesso!';
-      messageType.value = 'success';
-    }
-    await monstrosStore.fetchMonstros(selectedCampaignId.value); // Recarrega a lista
-    showMonstroForm.value = false;
-    monstroToEdit.value = null;
-    setTimeout(() => { message.value = ''; messageType.value = ''; }, 3000);
-  } catch (error) {
-    message.value = `Erro: ${error.message}`;
-    messageType.value = 'error';
-    setTimeout(() => { message.value = ''; messageType.value = ''; }, 5000);
-  }
-};
-
-const handleCloseForm = () => {
+const handleCloseForm = async () => {
   showMonstroForm.value = false;
   monstroToEdit.value = null;
+
+  // 1. Recarrega a lista de Monstros do store
+  await monstrosStore.fetchMonstros(selectedCampaignId.value);
+
+  // 2. Após recarregar, atualiza a referência de selectedMonstro
+  if (selectedMonstro.value) {
+    const updatedMonstro = monstrosStore.monstros.find(
+      m => m.id === selectedMonstro.value.id
+    );
+
+    if (updatedMonstro) {
+      selectedMonstro.value = updatedMonstro;
+    } else {
+      selectedMonstro.value = null;
+    }
+  } else if (filteredMonstros.value.length > 0) {
+    selectedMonstro.value = filteredMonstros.value[0];
+  }
+
+  if (filteredMonstros.value.length === 0) {
+    selectedMonstro.value = null;
+  }
 };
 
 // Watch for changes in selectedCampaignId and refetch monsters

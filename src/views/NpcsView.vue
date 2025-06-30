@@ -16,21 +16,23 @@
         @addEntity="addNpc"
         @editEntity="editNpc"
         @deleteEntity="deleteNpc"
-      />
+    />
 
-      <EntityDetailsView
-        :selectedEntity="selectedNpc"
-        :selectedCampaignName="selectedCampaignName"
-      />
-    </div>
-  </section>
+    <EntityDetailsView
+      :selectedEntity="selectedNpc"
+      :selectedCampaignName="selectedCampaignName"
+    />
+  </div>
+</section>
 
-  <NpcForm
-    v-if="showNpcForm"
-    :npc="npcToEdit"
-    @save="handleSaveNpc"
-    @close="handleCloseForm"
-  />
+<EditEntityForm
+  v-if="showNpcForm"
+  :entity-data="npcToEdit"
+  entity-type="npc" @close="handleCloseForm" />
+
+<div v-if="message" :class="{'bg-green-500': messageType === 'success', 'bg-red-500': messageType === 'error'}" class="text-white p-3 rounded-lg mt-4 text-center">
+  {{ message }}
+</div>
 </template>
 
 <script setup>
@@ -38,7 +40,8 @@ import { onMounted, ref, computed, watch } from 'vue';
 import { useNpcsStore } from '../stores/npcs';
 import { useAuthStore } from '../stores/auth';
 import { useCampaignsStore } from '../stores/campaigns';
-import NpcForm from '../components/NpcForm.vue';
+// Importe o novo componente genérico
+import EditEntityForm from '../components/EditEntityForm.vue';
 import EntityListView from '../components/EntityListView.vue';
 import EntityDetailsView from '../components/EntityDetailsView.vue';
 
@@ -98,7 +101,9 @@ const deleteNpc = async (id) => {
       await npcsStore.deleteNpc(id);
       message.value = 'NPC excluído com sucesso!';
       messageType.value = 'success';
-      await npcsStore.fetchNpcs(selectedCampaignId.value); // Recarrega a lista
+      // Removido o fetch aqui, será feito no handleCloseForm
+      selectedNpc.value = null;
+      setTimeout(() => { message.value = ''; messageType.value = ''; }, 3000);
     } catch (error) {
       message.value = `Erro ao excluir NPC: ${error.message}`;
       messageType.value = 'error';
@@ -107,36 +112,35 @@ const deleteNpc = async (id) => {
   }
 };
 
-const handleSaveNpc = async (npcData) => {
-  try {
-    if (npcData.image instanceof File) {
-      const imageUrl = await npcsStore.uploadImage(npcData.image);
-      npcData.image = imageUrl;
-    } else if (npcData.image === null) {
-      npcData.image = null;
-    }
+// Removido handleSaveNpc, pois a lógica de save está no EditEntityForm
 
-    if (npcData.id) {
-      await npcsStore.updateNpc(npcData);
-      message.value = 'NPC atualizado com sucesso!';
-      messageType.value = 'success';
+const handleCloseForm = async () => {
+  showNpcForm.value = false;
+  npcToEdit.value = null;
+
+  // 1. Recarrega a lista de NPCs do store
+  await npcsStore.fetchNpcs(selectedCampaignId.value);
+
+  // 2. Após recarregar, atualiza a referência de selectedNpc
+  if (selectedNpc.value) {
+    const updatedNpc = npcsStore.npcs.find(
+      n => n.id === selectedNpc.value.id
+    );
+
+    if (updatedNpc) {
+      selectedNpc.value = updatedNpc;
     } else {
-      await npcsStore.addNpc(npcData);
-      message.value = 'NPC adicionado com sucesso!';
-      messageType.value = 'success';
+      selectedNpc.value = null;
     }
-    await npcsStore.fetchNpcs(selectedCampaignId.value); // Recarrega a lista
-  } catch (error) {
-    message.value = `Erro: ${error.message}`;
-    messageType.value = 'error';
-    setTimeout(() => { message.value = ''; messageType.value = ''; }, 5000);
+  } else if (filteredNpcs.value.length > 0) {
+    selectedNpc.value = filteredNpcs.value[0];
+  }
+
+  if (filteredNpcs.value.length === 0) {
+    selectedNpc.value = null;
   }
 };
 
-const handleCloseForm = () => {
-  showNpcForm.value = false;
-  npcToEdit.value = null;
-};
 watch(selectedCampaignId, async (newCampaignId) => {
   if (authStore.user) {
     await npcsStore.fetchNpcs(newCampaignId);

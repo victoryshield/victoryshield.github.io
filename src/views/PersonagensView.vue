@@ -25,12 +25,14 @@
     </div>
   </section>
 
-  <PersonagemForm
+  <EditEntityForm
     v-if="showPersonagemForm"
-    :personagem="personagemToEdit"
-    @save="handleSavePersonagem"
-    @close="handleCloseForm"
-  />
+    :entity-data="personagemToEdit"
+    entity-type="personagem" @close="handleCloseForm" />
+
+  <div v-if="message" :class="{'bg-green-500': messageType === 'success', 'bg-red-500': messageType === 'error'}" class="text-white p-3 rounded-lg mt-4 text-center">
+    {{ message }}
+  </div>
 </template>
 
 <script setup>
@@ -38,7 +40,8 @@ import { onMounted, ref, computed, watch } from 'vue';
 import { usePersonagensStore } from '../stores/personagens';
 import { useAuthStore } from '../stores/auth';
 import { useCampaignsStore } from '../stores/campaigns';
-import PersonagemForm from '../components/PersonagemForm.vue';
+// Importe o novo componente genérico
+import EditEntityForm from '../components/EditEntityForm.vue';
 import EntityListView from '../components/EntityListView.vue';
 import EntityDetailsView from '../components/EntityDetailsView.vue';
 
@@ -88,7 +91,7 @@ const addPersonagem = () => {
 };
 
 const editPersonagem = (personagem) => {
-  personagemToEdit.value = { ...personagem }; // Clone para evitar mutação direta
+  personagemToEdit.value = { ...personagem };
   showPersonagemForm.value = true;
 };
 
@@ -98,8 +101,8 @@ const deletePersonagem = async (id) => {
       await personagensStore.deletePersonagem(id);
       message.value = 'Personagem excluído com sucesso!';
       messageType.value = 'success';
-      await personagensStore.fetchPersonagens(selectedCampaignId.value); // Recarrega a lista
-      selectedPersonagem.value = null; // Limpa a seleção
+      // Removido o fetch aqui, será feito no handleCloseForm
+      selectedPersonagem.value = null;
       setTimeout(() => { message.value = ''; messageType.value = ''; }, 3000);
     } catch (error) {
       message.value = `Erro ao excluir personagem: ${error.message}`;
@@ -109,39 +112,41 @@ const deletePersonagem = async (id) => {
   }
 };
 
-const handleSavePersonagem = async (personagemData) => {
-  try {
-    if (personagemData.image instanceof File) {
-      const imageUrl = await personagensStore.uploadImage(personagemData.image);
-      personagemData.image = imageUrl;
-    } else if (personagemData.image === null) {
-      // Se a imagem foi removida no formulário, defina como null no banco de dados
-      personagemData.image = null;
-    }
+// Removido handleSavePersonagem, pois a lógica de save está no EditEntityForm
 
-    if (personagemData.id) {
-      await personagensStore.updatePersonagem(personagemData);
-      message.value = 'Personagem atualizado com sucesso!';
-      messageType.value = 'success';
-    } else {
-      await personagensStore.addPersonagem(personagemData);
-      message.value = 'Personagem adicionado com sucesso!';
-      messageType.value = 'success';
-    }
-    await personagensStore.fetchPersonagens(selectedCampaignId.value); // Recarrega a lista
-    showPersonagemForm.value = false;
-    personagemToEdit.value = null;
-    setTimeout(() => { message.value = ''; messageType.value = ''; }, 3000);
-  } catch (error) {
-    message.value = `Erro: ${error.message}`;
-    messageType.value = 'error';
-    setTimeout(() => { message.value = ''; messageType.value = ''; }, 5000);
-  }
-};
-
-const handleCloseForm = () => {
+const handleCloseForm = async () => {
   showPersonagemForm.value = false;
-  personagemToEdit.value = null;
+  personagemToEdit.value = null; // Limpa a entidade para edição
+
+  // 1. Recarrega a lista de personagens do store
+  await personagensStore.fetchPersonagens(selectedCampaignId.value);
+
+  // 2. Após recarregar, atualiza a referência de selectedPersonagem
+  if (selectedPersonagem.value) {
+    // Tenta encontrar a versão atualizada do personagem na nova lista
+    const updatedPersonagem = personagensStore.personagens.find(
+      p => p.id === selectedPersonagem.value.id
+    );
+
+    if (updatedPersonagem) {
+      selectedPersonagem.value = updatedPersonagem; // Atribui a nova referência
+    } else {
+      // Se o personagem selecionado não for encontrado (ex: foi excluído), limpa a seleção
+      selectedPersonagem.value = null;
+    }
+  } 
+  
+  // Se não havia nenhum personagem selecionado antes de abrir o formulário
+  // (caso de adição de novo personagem) e agora existem personagens,
+  // selecione o primeiro da lista.
+  else if (filteredPersonagens.value.length > 0) {
+    selectedPersonagem.value = filteredPersonagens.value[0];
+  }
+
+  // Garante que selectedPersonagem é nulo se não houver personagens na lista filtrada
+  if (filteredPersonagens.value.length === 0) {
+    selectedPersonagem.value = null;
+  }
 };
 
 // Watch for changes in selectedCampaignId and refetch characters
@@ -156,4 +161,3 @@ watch(selectedCampaignId, async (newCampaignId) => {
   }
 });
 </script>
-

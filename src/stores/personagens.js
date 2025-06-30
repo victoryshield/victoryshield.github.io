@@ -16,7 +16,7 @@ export const usePersonagensStore = defineStore('personagens', {
         let query = supabase
           .from('personagens')
           .select('id, name, archetype, concept, Poder, Habilidade, Resistencia, Pontos_Acao, Pontos_Mana, Pontos_Vida, image, campaign_id');
-        
+
         if (campaignId) {
           query = query.eq('campaign_id', campaignId);
         }
@@ -40,7 +40,7 @@ export const usePersonagensStore = defineStore('personagens', {
         }
         const { data, error } = await supabase
           .from('personagens')
-          .insert([{ ...personagemData, user_id: authStore.user.id }])
+          .insert([personagemData])
           .select();
         if (error) throw error;
         this.personagens.push(data[0]);
@@ -60,7 +60,7 @@ export const usePersonagensStore = defineStore('personagens', {
         }
         const { data, error } = await supabase
           .from('personagens')
-          .update({ ...personagemData, user_id: authStore.user.id })
+          .update(personagemData)
           .eq('id', personagemData.id)
           .select();
         if (error) throw error;
@@ -78,12 +78,17 @@ export const usePersonagensStore = defineStore('personagens', {
     async uploadImage(file) {
       this.loading = true;
       try {
+        const authStore = useAuthStore(); // Adicionado
+        if (!authStore.user) { // Adicionado
+          throw new Error('User not authenticated.'); // Adicionado
+        }
         const fileExt = file.name.split('.').pop();
         const fileName = `${uuidv4()}.${fileExt}`;
-        const filePath = `personagens/${fileName}`;
+        // Caminho do arquivo modificado para incluir o UID do usuário
+        const filePath = `${authStore.user.id}/personagens/${fileName}`; // MODIFICADO
 
         const { error: uploadError } = await supabase.storage
-          .from('images') // Substitua 'personagens_images' pelo nome do seu bucket no Supabase Storage
+          .from('images')
           .upload(filePath, file, { cacheControl: '3600', upsert: false });
 
         if (uploadError) throw uploadError;
