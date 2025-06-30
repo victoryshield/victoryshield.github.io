@@ -47,6 +47,14 @@
           <font-awesome-icon :icon="['fas', 'book-open']" />
           <span class="hidden sm:inline">Campanha</span>
         </router-link>
+        <router-link v-if="!user" to="/auth" class="flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm transition-all duration-300 ease-in-out" :class="isActive('/auth') ? 'bg-amber-500 text-white font-semibold dark:text-slate-800' : 'bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:bg-amber-500 hover:text-white dark:hover:text-slate-800'">
+          <font-awesome-icon :icon="['fas', 'sign-in-alt']" />
+          <span class="hidden sm:inline">Login</span>
+        </router-link>
+        <button v-else @click="handleSignOut" :disabled="loading" class="flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm transition-all duration-300 ease-in-out bg-red-600 text-white font-semibold hover:bg-red-700">
+          <font-awesome-icon :icon="['fas', 'sign-out-alt']" />
+          <span class="hidden sm:inline">Sair</span>
+        </button>
       </nav>
       
       <main id="content">
@@ -57,10 +65,28 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import { useAuthStore } from './stores/auth';
+import { supabase } from './services/supabase';
+import { storeToRefs } from 'pinia';
 
 const route = useRoute();
 const isActive = (path) => route.path === path;
+
+const authStore = useAuthStore();
+const { user, loading } = storeToRefs(authStore);
+
+const handleSignOut = async () => {
+  await authStore.signOut();
+};
+
+onMounted(() => {
+  authStore.fetchUser(); // Fetch initial user session
+  supabase.auth.onAuthStateChange((_, session) => {
+    authStore.setSession(session);
+  });
+});
 </script>
 
 <style>

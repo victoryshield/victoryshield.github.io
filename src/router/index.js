@@ -9,12 +9,19 @@ import PersonagensView from '../views/PersonagensView.vue';
 import BestiarioView from '../views/BestiarioView.vue';
 import SessaoAtualView from '../views/SessaoAtualView.vue';
 import CampanhaView from '../views/CampanhaView.vue';
+import AuthView from '../views/AuthView.vue';
+import { useAuthStore } from '../stores/auth';
 
 const routes = [
   {
     path: '/',
     name: 'Home',
     component: HomeView,
+  },
+  {
+    path: '/auth',
+    name: 'Auth',
+    component: AuthView,
   },
   {
     path: '/combate',
@@ -66,6 +73,22 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+router.beforeEach(async (to, from, next) => {
+  const authStore = useAuthStore();
+  await authStore.fetchUser(); // Ensure user session is loaded
+
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  const isAuthenticated = !!authStore.user;
+
+  if (requiresAuth && !isAuthenticated) {
+    next('/auth');
+  } else if (to.path === '/auth' && isAuthenticated) {
+    next('/personagens'); // Redirect authenticated users from auth/home to a protected route
+  } else {
+    next();
+  }
 });
 
 export default router;

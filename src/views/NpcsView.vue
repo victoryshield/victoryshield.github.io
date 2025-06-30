@@ -93,6 +93,13 @@
       </div>
     </div>
   </section>
+
+  <NpcForm
+    v-if="showNpcForm"
+    :npc="npcToEdit"
+    @save="handleSaveNpc"
+    @close="handleCloseForm"
+  />
 </template>
 
 <script setup>
