@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Template Estático - Página de NPCs (Chispa)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+  </style>
+</head>
+
+<body class="font-sans antialiased bg-slate-100 text-slate-800 dark:bg-slate-900 dark:text-slate-300">
+
+  <div class="container relative mx-auto p-4 sm:p-6 md:p-8">
+    <header class="text-center mb-8 border-b-4 border-amber-500 pb-4">
+      <h1 class="text-3xl sm:text-4xl font-bold tracking-wider text-slate-800 dark:text-slate-100" style="font-family: 'Bangers', cursive;">Escudo do Mestre Digital</h1>
+      <p class="text-lg text-slate-600 dark:text-slate-300 uppercase tracking-widest mt-1">3DeT Victory</p>
+    </header>
+
+    <nav class="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-8">
+      <button class="flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 transition-all duration-300 ease-in-out hover:bg-amber-500 hover:text-white dark:hover:text-slate-800">
+        <i class="fa-solid fa-dice-d6 fa-fw"></i><span class="hidden sm:inline">Testes</span>
+      </button>
+      <button class="flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 transition-all duration-300 ease-in-out hover:bg-amber-500 hover:text-white dark:hover:text-slate-800">
+        <i class="fa-solid fa-hand-fist fa-fw"></i><span class="hidden sm:inline">Combate</span>
+      </button>
+      <button class="flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 transition-all duration-300 ease-in-out hover:bg-amber-500 hover:text-white dark:hover:text-slate-800">
+        <i class="fa-solid fa-person-running fa-fw"></i><span class="hidden sm:inline">Manobras</span>
+      </button>
+      <button class="flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 transition-all duration-300 ease-in-out hover:bg-amber-500 hover:text-white dark:hover:text-slate-800">
+        <i class="fa-solid fa-book fa-fw"></i><span class="hidden sm:inline">Regras</span>
+      </button>
+      <button class="flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 transition-all duration-300 ease-in-out hover:bg-amber-500 hover:text-white dark:hover:text-slate-800">
+        <i class="fa-solid fa-hat-wizard fa-fw"></i><span class="hidden sm:inline">Mestrando</span>
+      </button>
+      <button class="flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 transition-all duration-300 ease-in-out hover:bg-amber-500 hover:text-white dark:hover:text-slate-800">
+        <i class="fa-solid fa-users fa-fw"></i><span class="hidden sm:inline">Personagens</span>
+      </button>
+      <button class="flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm transition-all duration-300 ease-in-out bg-amber-500 text-white font-semibold dark:bg-amber-500 dark:text-slate-800">
+        <i class="fa-solid fa-address-book fa-fw"></i><span class="hidden sm:inline">NPCs</span>
+      </button>
+      <button class="flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 transition-all duration-300 ease-in-out hover:bg-amber-500 hover:text-white dark:hover:text-slate-800">
+        <i class="fa-solid fa-dragon fa-fw"></i><span class="hidden sm:inline">Bestiário</span>
+      </button>
+      <button class="flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 transition-all duration-300 ease-in-out hover:bg-amber-500 hover:text-white dark:hover:text-slate-800">
+        <i class="fa-solid fa-scroll fa-fw"></i><span class="hidden sm:inline">Sessão Atual</span>
+      </button>
+      <button class="flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 transition-all duration-300 ease-in-out hover:bg-amber-500 hover:text-white dark:hover:text-slate-800">
+        <i class="fa-solid fa-book-open fa-fw"></i><span class="hidden sm:inline">Campanha</span>
+      </button>
+    </nav>
+    
+    <main id="content">
+      <section id="npcs">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="md:col-span-1 p-4 rounded-lg shadow bg-white dark:bg-slate-800 max-h-[600px] overflow-y-auto">
+            <h2 class="text-xl font-bold mb-4 text-amber-700 dark:text-amber-500 flex items-center gap-x-2">
+              <i class="fa-solid fa-address-book fa-fw"></i>
+              <span>Personagens do Mestre</span>
+            </h2>
+            <ul class="space-y-1">
+                <li class="p-3 rounded-md cursor-pointer transition-colors duration-200 bg-amber-100 dark:bg-amber-800 ring-2 ring-amber-500">
+                    <p class="font-semibold text-amber-800 dark:text-amber-100">Chispa</p>
+                </li>
+                <li class="p-3 rounded-md cursor-pointer transition-colors duration-200 hover:bg-amber-100 dark:hover:bg-slate-700">
+                    <p class="font-semibold dark:text-slate-100">Lorde Valerius</p>
+                </li>
+                <li class="p-3 rounded-md cursor-pointer transition-colors duration-200 hover:bg-amber-100 dark:hover:bg-slate-700">
+                    <p class="font-semibold dark:text-slate-100">Seraphina, a Oráculo</p>
+                </li>
+            </ul>
+          </div>
+          <div id="npc-details" class="md:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-lg shadow min-h-[400px]">
+            <div class="flex flex-col sm:flex-row gap-6 items-start">
+              <div class="flex-shrink-0 w-full sm:w-48">
+                <img src="https://placehold.co/400x400/e2e8f0/475569?text=C" alt="Retrato de Chispa" class="bg-slate-300 dark:bg-slate-700 w-full h-auto object-cover rounded-lg shadow-lg" onerror="this.onerror=null; this.src='https://placehold.co/400x400/e2e8f0/475569?text=C';">
+              </div>
+              <div class="flex-grow">
+                <h3 class="text-2xl font-bold text-amber-700 dark:text-amber-500">Chispa</h3>
+                <p class="text-md text-slate-600 dark:text-slate-400 italic mb-2">Mecha de 2,5m robusto e protetor, pilotado pelo gatinho genial e genioso Chispa. Desempenha a função de tanque, protegendo seus aliados com sua resistência e provocando inimigos.</p>
+                <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">Construto • 12pt pontos</p>
+                <div class="mb-4">
+                  <h4 class="font-bold mb-1 flex items-center gap-x-2 dark:text-slate-100"><i class="fa-solid fa-list-ol fa-fw text-slate-500"></i><span>Atributos</span></h4>
+                  <div class="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 mt-2">
+                    <div class="bg-white dark:bg-slate-800 p-3 rounded-lg flex items-center gap-x-3 shadow-sm border dark:border-slate-700">
+                      <i class="fa-solid fa-hand-fist fa-fw fa-2x text-amber-700 dark:text-amber-500"></i>
+                      <div>
+                        <span class="block text-sm text-slate-600 dark:text-slate-400">Poder</span>
+                        <span class="block text-xl font-bold text-slate-800 dark:text-slate-100">3</span>
+                      </div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-3 rounded-lg flex items-center gap-x-3 shadow-sm border dark:border-slate-700">
+                      <i class="fa-solid fa-brain fa-fw fa-2x text-amber-700 dark:text-amber-500"></i>
+                      <div>
+                        <span class="block text-sm text-slate-600 dark:text-slate-400">Habilidade</span>
+                        <span class="block text-xl font-bold text-slate-800 dark:text-slate-100">3</span>
+                      </div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-3 rounded-lg flex items-center gap-x-3 shadow-sm border dark:border-slate-700">
+                      <i class="fa-solid fa-shield-halved fa-fw fa-2x text-amber-700 dark:text-amber-500"></i>
+                      <div>
+                        <span class="block text-sm text-slate-600 dark:text-slate-400">Resistência</span>
+                        <span class="block text-xl font-bold text-slate-800 dark:text-slate-100">4</span>
+                      </div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-3 rounded-lg flex items-center gap-x-3 shadow-sm border dark:border-slate-700">
+                      <i class="fa-solid fa-bolt fa-fw fa-2x text-amber-700 dark:text-amber-500"></i>
+                      <div>
+                        <span class="block text-sm text-slate-600 dark:text-slate-400">Pontos de Ação</span>
+                        <span class="block text-xl font-bold text-slate-800 dark:text-slate-100">3</span>
+                      </div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-3 rounded-lg flex items-center gap-x-3 shadow-sm border dark:border-slate-700">
+                      <i class="fa-solid fa-wand-magic-sparkles fa-fw fa-2x text-amber-700 dark:text-amber-500"></i>
+                      <div>
+                        <span class="block text-sm text-slate-600 dark:text-slate-400">Pontos de Mana</span>
+                        <span class="block text-xl font-bold text-slate-800 dark:text-slate-100">15</span>
+                      </div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-3 rounded-lg flex items-center gap-x-3 shadow-sm border dark:border-slate-700">
+                      <i class="fa-solid fa-heart-pulse fa-fw fa-2x text-amber-700 dark:text-amber-500"></i>
+                      <div>
+                        <span class="block text-sm text-slate-600 dark:text-slate-400">Pontos de Vida</span>
+                        <span class="block text-xl font-bold text-slate-800 dark:text-slate-100">20</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="mb-4">
+                  <h4 class="font-bold mb-1 flex items-center gap-x-2 dark:text-slate-100"><i class="fa-solid fa-graduation-cap fa-fw text-slate-500"></i><span>Perícias</span></h4>
+                  <p class="text-slate-600 dark:text-slate-400">Nenhuma</p>
+                </div>
+                <div class="mb-4">
+                  <h4 class="font-bold mb-1 flex items-center gap-x-2 dark:text-slate-100"><i class="fa-solid fa-thumbs-up fa-fw text-green-600"></i><span>Vantagens</span></h4>
+                  <p class="text-slate-600 dark:text-slate-400">Nenhuma</p>
+                </div>
+                <div>
+                  <h4 class="font-bold mb-1 flex items-center gap-x-2 dark:text-slate-100"><i class="fa-solid fa-thumbs-down fa-fw text-red-600"></i><span>Desvantagens</span></h4>
+                  <p class="text-slate-600 dark:text-slate-400">Nenhuma</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
