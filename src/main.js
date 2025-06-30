@@ -3,8 +3,169 @@ import { createPinia } from 'pinia';
 import App from './App.vue';
 import router from './router';
 import './style.css';
-import { useAuthStore } from './stores/auth';
-import { supabase } from './services/supabase';
+// As importações 'useAuthStore' e 'supabase' foram removidas pois não eram usadas aqui.
+
+/* import the fontawesome core */
+import { library } from '@fortawesome/fontawesome-svg-core';
+
+/* import font awesome icon component */
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+
+/* import specific icons */
+import {
+  faAddressBook,
+  faAward,
+  faBed,
+  faBolt,
+  faBoltLightning,
+  faBook,
+  faBookOpen,
+  faBrain,
+  faBullseye,
+  faCalculator,
+  faCheck,
+  faCircleMinus,
+  faCirclePlus,
+  faCircleQuestion,
+  faCrosshairs,
+  faCubes,
+  faDice,
+  faDiceD6,
+  faDiceOne,
+  faDragon,
+  faExclamationTriangle,
+  faEye,
+  faEyeSlash,
+  faFaceDizzy,
+  faFistRaised,
+  faFlagCheckered,
+  faGavel,
+  faGraduationCap,
+  faHandFist,
+  faHandcuffs,
+  faHatWizard,
+  faHeart,
+  faHeartCrack,
+  faHeartPulse,
+  faHourglassHalf,
+  faKhanda,
+  faLayerGroup,
+  faLightbulb,
+  faListOl,
+  faMapMarkerAlt,
+  faMasksTheater,
+  faPenToSquare,
+  faPersonBurst,
+  faPersonFallingBurst, // Ícone corrigido (substitui faPersonFalling)
+  faPersonRunning,
+  faPlusMinus,
+  faRightLeft,
+  faRotate,
+  faRulerHorizontal,
+  faScroll,
+  faSearch,
+  faShieldHalved,
+  faShieldHeart,
+  faShoePrints,
+  faSignInAlt,
+  faSignOutAlt,
+  faSkull,
+  faSkullCrossbones,
+  faStairs,
+  faStar,
+  faStarOfLife,
+  faStopwatch,
+  faThumbsDown,
+  faThumbsUp,
+  faTrash,
+  faTrophy,
+  faUserGroup,
+  faUserPen,
+  faUserPlus,
+  faUserSlash,
+  faUserXmark,
+  faUsers,
+  faWandMagicSparkles,
+  faWandSparkles
+} from '@fortawesome/free-solid-svg-icons';
+
+/* add icons to the library */
+library.add(
+  faAddressBook,
+  faAward,
+  faBed,
+  faBolt,
+  faBoltLightning,
+  faBook,
+  faBookOpen,
+  faBrain,
+  faBullseye,
+  faCalculator,
+  faCheck,
+  faCircleMinus,
+  faCirclePlus,
+  faCircleQuestion,
+  faCrosshairs,
+  faCubes,
+  faDice,
+  faDiceD6,
+  faDiceOne,
+  faDragon,
+  faExclamationTriangle,
+  faEye,
+  faEyeSlash,
+  faFaceDizzy,
+  faFistRaised,
+  faFlagCheckered,
+  faGavel,
+  faGraduationCap,
+  faHandFist,
+  faHandcuffs,
+  faHatWizard,
+  faHeart,
+  faHeartCrack,
+  faHeartPulse,
+  faHourglassHalf,
+  faKhanda,
+  faLayerGroup,
+  faLightbulb,
+  faListOl,
+  faMapMarkerAlt,
+  faMasksTheater,
+  faPenToSquare,
+  faPersonBurst,
+  faPersonFallingBurst,
+  faPersonRunning,
+  faPlusMinus,
+  faRightLeft,
+  faRotate,
+  faRulerHorizontal,
+  faScroll,
+  faSearch,
+  faShieldHalved,
+  faShieldHeart,
+  faShoePrints,
+  faSignInAlt,
+  faSignOutAlt,
+  faSkull,
+  faSkullCrossbones,
+  faStairs,
+  faStar,
+  faStarOfLife,
+  faStopwatch,
+  faThumbsDown,
+  faThumbsUp,
+  faTrash,
+  faTrophy,
+  faUserGroup,
+  faUserPen,
+  faUserPlus,
+  faUserSlash,
+  faUserXmark,
+  faUsers,
+  faWandMagicSparkles,
+  faWandSparkles
+);
 
 const pinia = createPinia();
 
@@ -12,5 +173,8 @@ const app = createApp(App);
 
 app.use(router);
 app.use(pinia);
+
+/* add font awesome icon component */
+app.component('font-awesome-icon', FontAwesomeIcon);
 
 app.mount('#app');

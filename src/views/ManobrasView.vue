@@ -9,7 +9,7 @@
         </h2>
         <dl class="space-y-4">
           <div>
-            <dt class="font-semibold flex items-center gap-x-2"><font-awesome-icon :icon="['fas', 'person-falling']" class="text-slate-500" /><span>Caído</span></dt>
+            <dt class="font-semibold flex items-center gap-x-2"><font-awesome-icon :icon="['fas', 'person-falling-burst']" class="text-slate-500" /><span>Caído</span></dt>
             <dd class="text-sm text-slate-600 dark:text-slate-400 pl-6"><strong>Perda</strong> em todos os testes. Gasta um
               <strong>Movimento</strong> para se levantar.
             </dd>

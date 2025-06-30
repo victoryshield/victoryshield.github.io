@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { supabase } from '../services/supabase';
 import { v4 as uuidv4 } from 'uuid';
+import { useAuthStore } from './auth';
 
 export const usePersonagensStore = defineStore('personagens', {
   state: () => ({
@@ -33,9 +34,13 @@ export const usePersonagensStore = defineStore('personagens', {
     async addPersonagem(personagemData) {
       this.loading = true;
       try {
+        const authStore = useAuthStore();
+        if (!authStore.user) {
+          throw new Error('User not authenticated.');
+        }
         const { data, error } = await supabase
           .from('personagens')
-          .insert([personagemData])
+          .insert([{ ...personagemData, user_id: authStore.user.id }])
           .select();
         if (error) throw error;
         this.personagens.push(data[0]);
@@ -49,9 +54,13 @@ export const usePersonagensStore = defineStore('personagens', {
     async updatePersonagem(personagemData) {
       this.loading = true;
       try {
+        const authStore = useAuthStore();
+        if (!authStore.user) {
+          throw new Error('User not authenticated.');
+        }
         const { data, error } = await supabase
           .from('personagens')
-          .update(personagemData)
+          .update({ ...personagemData, user_id: authStore.user.id })
           .eq('id', personagemData.id)
           .select();
         if (error) throw error;
@@ -74,19 +83,36 @@ export const usePersonagensStore = defineStore('personagens', {
         const filePath = `personagens/${fileName}`;
 
         const { error: uploadError } = await supabase.storage
-          .from('personagens_images') // Substitua 'personagens_images' pelo nome do seu bucket no Supabase Storage
+          .from('images') // Substitua 'personagens_images' pelo nome do seu bucket no Supabase Storage
           .upload(filePath, file, { cacheControl: '3600', upsert: false });
 
         if (uploadError) throw uploadError;
 
         const { data: publicUrlData } = supabase.storage
-          .from('personagens_images')
+          .from('images')
           .getPublicUrl(filePath);
 
         return publicUrlData.publicUrl;
       } catch (error) {
         this.error = error;
         console.error('Error uploading image:', error);
+        throw error;
+      } finally {
+        this.loading = false;
+      }
+    },
+    async deletePersonagem(personagemId) {
+      this.loading = true;
+      try {
+        const { error } = await supabase
+          .from('personagens')
+          .delete()
+          .eq('id', personagemId);
+        if (error) throw error;
+        this.personagens = this.personagens.filter(p => p.id !== personagemId);
+      } catch (error) {
+        this.error = error;
+        console.error('Error deleting personagem:', error);
         throw error;
       } finally {
         this.loading = false;

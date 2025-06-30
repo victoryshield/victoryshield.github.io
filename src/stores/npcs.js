@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { supabase } from '../services/supabase';
 import { v4 as uuidv4 } from 'uuid';
+import { useAuthStore } from './auth';
 
 export const useNpcsStore = defineStore('npcs', {
   state: () => ({
@@ -33,9 +34,13 @@ export const useNpcsStore = defineStore('npcs', {
     async addNpc(npcData) {
       this.loading = true;
       try {
+        const authStore = useAuthStore();
+        if (!authStore.user) {
+          throw new Error('User not authenticated.');
+        }
         const { data, error } = await supabase
           .from('npcs')
-          .insert([npcData])
+          .insert([{ ...npcData, user_id: authStore.user.id }])
           .select();
         if (error) throw error;
         this.npcs.push(data[0]);
@@ -49,9 +54,13 @@ export const useNpcsStore = defineStore('npcs', {
     async updateNpc(npcData) {
       this.loading = true;
       try {
+        const authStore = useAuthStore();
+        if (!authStore.user) {
+          throw new Error('User not authenticated.');
+        }
         const { data, error } = await supabase
           .from('npcs')
-          .update(npcData)
+          .update({ ...npcData, user_id: authStore.user.id })
           .eq('id', npcData.id)
           .select();
         if (error) throw error;
@@ -74,19 +83,36 @@ export const useNpcsStore = defineStore('npcs', {
         const filePath = `npcs/${fileName}`;
 
         const { error: uploadError } = await supabase.storage
-          .from('npcs_images') // Substitua 'npcs_images' pelo nome do seu bucket no Supabase Storage
+          .from('images') // Substitua 'npcs_images' pelo nome do seu bucket no Supabase Storage
           .upload(filePath, file, { cacheControl: '3600', upsert: false });
 
         if (uploadError) throw uploadError;
 
         const { data: publicUrlData } = supabase.storage
-          .from('npcs_images')
+          .from('images')
           .getPublicUrl(filePath);
 
         return publicUrlData.publicUrl;
       } catch (error) {
         this.error = error;
         console.error('Error uploading image:', error);
+        throw error;
+      } finally {
+        this.loading = false;
+      }
+    },
+    async deleteNpc(npcId) {
+      this.loading = true;
+      try {
+        const { error } = await supabase
+          .from('npcs')
+          .delete()
+          .eq('id', npcId);
+        if (error) throw error;
+        this.npcs = this.npcs.filter(n => n.id !== npcId);
+      } catch (error) {
+        this.error = error;
+        console.error('Error deleting npc:', error);
         throw error;
       } finally {
         this.loading = false;
