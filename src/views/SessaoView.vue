@@ -1,89 +1,68 @@
 <template>
   <section id="sessoes">
-    <h1 class="text-3xl font-bold text-amber-600 dark:text-amber-500 mb-6">Sessões de Jogo</h1>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="md:col-span-1">
-        <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow">
-          <h2 class="text-xl font-bold mb-4">Campanhas</h2>
-          <select v-model="selectedCampaignId" @change="loadSessions" class="w-full p-2 border rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-white">
-            <option v-for="campaign in campaignsStore.campaigns" :key="campaign.id" :value="campaign.id">
-              {{ campaign.name }}
-            </option>
-          </select>
-        </div>
-      </div>
-      <div class="md:col-span-2">
-        <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow">
-          <h2 class="text-xl font-bold mb-4">Sessões</h2>
-          <div v-if="sessionsStore.loading">Carregando...</div>
-          <div v-if="sessionsStore.error">{{ sessionsStore.error }}</div>
-          <ul v-if="!sessionsStore.loading && !sessionsStore.error">
-            <li v-for="session in sessionsStore.sessions" :key="session.id" class="mb-2 p-2 border-b dark:border-slate-700 flex justify-between items-center">
-              <div>
-                <h3 class="font-bold">{{ session.title }}</h3>
-                <p>{{ new Date(session.date).toLocaleDateString() }}</p>
-              </div>
-              <div>
-                <button @click="editSession(session)" class="text-slate-500 hover:text-amber-500 mr-2">
-                  <font-awesome-icon :icon="['fas', 'pencil-alt']" />
-                </button>
-                <button @click="deleteSession(session.id)" class="text-slate-500 hover:text-red-500">
-                  <font-awesome-icon :icon="['fas', 'trash']" />
-                </button>
-              </div>
-            </li>
-          </ul>
-          <button @click="addSession" class="mt-4 bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded">
-            Nova Sessão
-          </button>
-        </div>
-      </div>
-    </div>
+      <EntityListView
+        :entities="filteredSessions"
+        :selectedEntity="selectedSession"
+        :loading="sessionsStore.loading"
+        :error="sessionsStore.error"
+        entityTitle="Sessões"
+        :entityIcon="['fas', 'scroll']"
+        :showCampaignFilter="true"
+        :campaigns="campaignsStore.campaigns"
+        :selectedCampaignId="selectedCampaignId"
+        @update:selectedCampaignId="selectedCampaignId = $event"
+        @selectEntity="selectSession"
+        @addEntity="addSession"
+        @deleteEntity="deleteSession"
+        @editEntity="editSession"
+      />
 
-    <div v-if="showSessionForm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-lg w-full max-w-2xl">
-        <h2 class="text-2xl font-bold mb-4">{{ sessionToEdit ? 'Editar Sessão' : 'Nova Sessão' }}</h2>
-        <form @submit.prevent="saveSession">
-          <div class="mb-4">
-            <label for="title" class="block text-sm font-bold mb-2">Título</label>
-            <input type="text" v-model="form.title" id="title" class="w-full p-2 border rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-white">
-          </div>
-          <div class="mb-4">
-            <label for="date" class="block text-sm font-bold mb-2">Data</label>
-            <input type="date" v-model="form.date" id="date" class="w-full p-2 border rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-white">
-          </div>
-          <div class="mb-4">
-            <label for="summary" class="block text-sm font-bold mb-2">Resumo</label>
-            <textarea v-model="form.summary" id="summary" rows="5" class="w-full p-2 border rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-white"></textarea>
-          </div>
-          <div class="flex justify-end gap-4">
-            <button type="button" @click="showSessionForm = false" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Cancelar</button>
-            <button type="submit" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded">Salvar</button>
-          </div>
-        </form>
-      </div>
+      <SessionDetailsView
+        :selectedSession="selectedSession"
+        :selectedCampaignName="selectedCampaignName"
+        :is-edit-mode="isEditMode"
+        :loading="sessionsStore.loading"
+        @sessionUpdated="handleSessionUpdate"
+        @creationCancelled="cancelCreation"
+        @startEditing="startEditingFromDetails"
+      />
     </div>
   </section>
+
+  <div v-if="message" :class="{'bg-green-500': messageType === 'success', 'bg-red-500': messageType === 'error'}" class="text-white p-3 rounded-lg mt-4 text-center">
+    {{ message }}
+  </div>
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref, computed, watch } from 'vue';
 import { useSessionsStore } from '../stores/sessions';
-import { useCampaignsStore } from '../stores/campaigns';
 import { useAuthStore } from '../stores/auth';
+import { useCampaignsStore } from '../stores/campaigns';
+import EntityListView from '../components/EntityListView.vue';
+import SessionDetailsView from '../components/SessionDetailsView.vue';
 
 const sessionsStore = useSessionsStore();
-const campaignsStore = useCampaignsStore();
 const authStore = useAuthStore();
+const campaignsStore = useCampaignsStore();
 
+const selectedSession = ref(null);
+const isEditMode = ref(false);
+const message = ref('');
+const messageType = ref('');
 const selectedCampaignId = ref(null);
-const showSessionForm = ref(false);
-const sessionToEdit = ref(null);
-const form = ref({
-  title: '',
-  date: '',
-  summary: '',
-  campaign_id: null
+
+const filteredSessions = computed(() => {
+  if (!selectedCampaignId.value) {
+    return sessionsStore.sessions;
+  }
+  return sessionsStore.sessions.filter(s => s.campaign_id === selectedCampaignId.value);
+});
+
+const selectedCampaignName = computed(() => {
+  const campaign = campaignsStore.campaigns.find(c => c.id === selectedCampaignId.value);
+  return campaign ? campaign.name : 'Todas as Campanhas';
 });
 
 onMounted(async () => {
@@ -91,49 +70,82 @@ onMounted(async () => {
     await campaignsStore.fetchCampaigns(authStore.user.id);
     if (campaignsStore.campaigns.length > 0) {
       selectedCampaignId.value = campaignsStore.campaigns[0].id;
-      loadSessions();
+    }
+    await sessionsStore.fetchSessions(selectedCampaignId.value);
+    if (filteredSessions.value.length > 0) {
+      selectSession(filteredSessions.value[0]);
+    } else {
+      selectedSession.value = null;
+      isEditMode.value = false;
     }
   }
 });
 
-const loadSessions = () => {
-  if (selectedCampaignId.value) {
-    sessionsStore.fetchSessions(selectedCampaignId.value);
-  }
+const selectSession = (session) => {
+  selectedSession.value = session;
+  isEditMode.value = false;
 };
 
 const addSession = () => {
-  sessionToEdit.value = null;
-  form.value = {
-    title: '',
-    date: new Date().toISOString().substr(0, 10),
-    summary: '',
-    campaign_id: selectedCampaignId.value
-  };
-  showSessionForm.value = true;
+  selectedSession.value = null;
+  isEditMode.value = true;
 };
 
 const editSession = (session) => {
-  sessionToEdit.value = session;
-  form.value = { ...session };
-  showSessionForm.value = true;
+  selectedSession.value = session;
+  isEditMode.value = true;
 };
 
-const saveSession = async () => {
-  if (sessionToEdit.value) {
-    await sessionsStore.updateSession(form.value);
-  } else {
-    await sessionsStore.addSession(form.value);
+const cancelCreation = () => {
+  isEditMode.value = false;
+  if (!selectedSession.value && filteredSessions.value.length > 0) {
+    selectSession(filteredSessions.value[0]);
   }
-  showSessionForm.value = false;
+};
+
+const startEditingFromDetails = () => {
+  isEditMode.value = true;
 };
 
 const deleteSession = async (id) => {
-  if (confirm('Tem certeza que deseja excluir esta sessão?')) {
+  try {
     await sessionsStore.deleteSession(id);
+    message.value = 'Sessão excluída com sucesso!';
+    messageType.value = 'success';
+    selectedSession.value = null;
+    isEditMode.value = false;
+    await sessionsStore.fetchSessions(selectedCampaignId.value);
+    if (filteredSessions.value.length > 0) {
+      selectSession(filteredSessions.value[0]);
+    }
+    setTimeout(() => { message.value = ''; messageType.value = ''; }, 3000);
+  } catch (error) {
+    message.value = `Erro ao excluir sessão: ${error.message}`;
+    messageType.value = 'error';
+    setTimeout(() => { message.value = ''; messageType.value = ''; }, 5000);
   }
 };
 
-watch(selectedCampaignId, loadSessions);
+const handleSessionUpdate = async () => {
+  isEditMode.value = false;
+  await sessionsStore.fetchSessions(selectedCampaignId.value);
+  if (filteredSessions.value.length > 0) {
+    const updatedOrNewSession = sessionsStore.sessions.find(s => s.id === selectedSession.value?.id) || filteredSessions.value[filteredSessions.value.length - 1];
+    selectSession(updatedOrNewSession);
+  } else {
+    selectedSession.value = null;
+  }
+};
 
+watch(selectedCampaignId, async (newCampaignId) => {
+  if (authStore.user) {
+    await sessionsStore.fetchSessions(newCampaignId);
+    if (filteredSessions.value.length > 0) {
+      selectSession(filteredSessions.value[0]);
+    } else {
+      selectedSession.value = null;
+      isEditMode.value = false;
+    }
+  }
+});
 </script>

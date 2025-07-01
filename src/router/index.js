@@ -83,6 +83,12 @@ const routes = [
     component: CampanhaView,
     meta: { requiresAuth: true },
   },
+  {
+    path: '/testes',
+    name: 'Testes',
+    component: () => import('../views/TestesView.vue'),
+    meta: { requiresAuth: true },
+  },
 ];
 
 const router = createRouter({

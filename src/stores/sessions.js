@@ -16,7 +16,7 @@ export const useSessionsStore = defineStore('sessions', {
           .from('sessions')
           .select('*')
           .eq('campaign_id', campaignId)
-          .order('date', { ascending: false });
+          .order('created_at', { ascending: false });
         if (error) throw error;
         this.sessions = data;
       } catch (error) {
