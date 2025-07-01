@@ -28,7 +28,7 @@
             <button @click.stop="$emit('editEntity', entity)" class="text-slate-500 hover:text-amber-600 dark:text-slate-400 dark:hover:text-amber-400 transition-colors duration-200">
               <font-awesome-icon :icon="['fas', 'pen-to-square']" />
             </button>
-            <button @click.stop="$emit('deleteEntity', entity.id)" class="text-red-500 hover:text-red-700 transition-colors duration-200">
+            <button @click.stop="openConfirmationModal(entity.id)" class="text-red-500 hover:text-red-700 transition-colors duration-200">
               <font-awesome-icon :icon="['fas', 'trash']" />
             </button>
           </div>
@@ -38,11 +38,20 @@
     <button @click="$emit('addEntity')" class="absolute bottom-4 right-4 bg-amber-500 hover:bg-amber-600 text-white p-4 rounded-full shadow-lg">
       <font-awesome-icon :icon="['fas', 'plus']" class="fa-2x" />
     </button>
+
+    <ConfirmationModal
+      v-if="showConfirmationModal"
+      title="Confirmar Exclusão"
+      message="Tem certeza que deseja excluir esta entidade?"
+      @close="closeConfirmationModal"
+      @confirm="confirmDelete"
+    />
   </div>
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue';
+import { ref } from 'vue';
+import ConfirmationModal from './ConfirmationModal.vue';
 
 defineProps({
   entities: {
@@ -83,5 +92,23 @@ defineProps({
   }
 });
 
-defineEmits(['selectEntity', 'editEntity', 'deleteEntity', 'addEntity', 'update:selectedCampaignId']);
+const emit = defineEmits(['selectEntity', 'editEntity', 'deleteEntity', 'addEntity', 'update:selectedCampaignId']);
+
+const showConfirmationModal = ref(false);
+const entityToDeleteId = ref(null);
+
+const openConfirmationModal = (id) => {
+  entityToDeleteId.value = id;
+  showConfirmationModal.value = true;
+};
+
+const closeConfirmationModal = () => {
+  showConfirmationModal.value = false;
+  entityToDeleteId.value = null;
+};
+
+const confirmDelete = () => {
+  emit('deleteEntity', entityToDeleteId.value);
+  closeConfirmationModal();
+};
 </script>

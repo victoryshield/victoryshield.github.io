@@ -1,6 +1,17 @@
 <template>
   <div class="md:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-lg shadow min-h-[400px]">
-    <div v-if="selectedEntity" class="flex flex-col sm:flex-row gap-6 items-start">
+    <!-- FORMULÁRIO DINÂMICO -->
+    <div v-if="isEditMode || !selectedEntity">
+      <EntityForm
+        :entity="selectedEntity"
+        :entityName="entityTypeName"
+        @save="saveEntity"
+        @close="cancelForm"
+      />
+    </div>
+
+    <!-- VISUALIZAÇÃO DE DETALHES -->
+    <div v-else-if="selectedEntity" class="flex flex-col sm:flex-row gap-6 items-start">
       <div class="flex-shrink-0 w-full sm:w-48">
         <img :src="selectedEntity.image || 'https://placehold.co/400x400/e2e8f0/475569?text=C'" :alt="'Retrato de ' + selectedEntity.name" class="bg-slate-300 dark:bg-slate-700 w-full h-auto object-cover rounded-lg shadow-lg" @error="$event.target.src='https://placehold.co/400x400/e2e8f0/475569?text=C'">
       </div>
@@ -72,16 +83,22 @@
         </div>
       </div>
     </div>
+
+    <!-- MENSAGEM INICIAL -->
     <div v-else class="text-center text-slate-500 dark:text-slate-400">
-      Selecione um item na lista para ver os detalhes.
+      Selecione um item na lista para ver os detalhes ou adicione um novo.
     </div>
   </div>
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
+import { computed } from 'vue';
+import EntityForm from './EntityForm.vue';
+import { useNpcsStore } from '../stores/npcs';
+import { usePersonagensStore } from '../stores/personagens';
+import { useMonstrosStore } from '../stores/monstros';
 
-defineProps({
+const props = defineProps({
   selectedEntity: {
     type: Object,
     default: null
@@ -89,6 +106,75 @@ defineProps({
   selectedCampaignName: {
     type: String,
     default: ''
+  },
+  entityType: {
+    type: String,
+    required: true,
+    validator: (value) => ['personagem', 'npc', 'monstro'].includes(value),
+  },
+  isEditMode: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+const emit = defineEmits(['entityUpdated', 'creationCancelled']);
+
+const npcsStore = useNpcsStore();
+const personagensStore = usePersonagensStore();
+const monstrosStore = useMonstrosStore();
+
+const entityTypeName = computed(() => {
+  switch (props.entityType) {
+    case 'personagem':
+      return 'Personagem';
+    case 'npc':
+      return 'NPC';
+    case 'monstro':
+      return 'Monstro';
+    default:
+      return 'Entidade';
   }
 });
+
+const saveEntity = async (entityData) => {
+  try {
+    if (entityData.image && typeof entityData.image !== 'string') {
+      let imageUrl = null;
+      if (props.entityType === 'personagem') {
+        imageUrl = await personagensStore.uploadImage(entityData.image);
+      } else if (props.entityType === 'npc') {
+        imageUrl = await npcsStore.uploadImage(entityData.image);
+      } else if (props.entityType === 'monstro') {
+        imageUrl = await monstrosStore.uploadImage(entityData.image);
+      }
+      entityData.image = imageUrl;
+    }
+
+    if (entityData.id) {
+      if (props.entityType === 'personagem') {
+        await personagensStore.updatePersonagem(entityData);
+      } else if (props.entityType === 'npc') {
+        await npcsStore.updateNpc(entityData);
+      } else if (props.entityType === 'monstro') {
+        await monstrosStore.updateMonstro(entityData);
+      }
+    } else {
+      if (props.entityType === 'personagem') {
+        await personagensStore.addPersonagem(entityData);
+      } else if (props.entityType === 'npc') {
+        await npcsStore.addNpc(entityData);
+      } else if (props.entityType === 'monstro') {
+        await monstrosStore.addMonstro(entityData);
+      }
+    }
+    emit('entityUpdated');
+  } catch (error) {
+    console.error(`Erro ao salvar ${props.entityType}:`, error);
+  }
+};
+
+const cancelForm = () => {
+  emit('creationCancelled');
+};
 </script>

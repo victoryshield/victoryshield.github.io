@@ -38,9 +38,10 @@ export const useMonstrosStore = defineStore('monstros', {
         if (!authStore.user) {
           throw new Error('User not authenticated.');
         }
+        const { id, ...rest } = monstroData;
         const { data, error } = await supabase
           .from('monstros')
-          .insert([monstroData])
+          .insert([rest])
           .select();
         if (error) throw error;
         this.monstros.push(data[0]);
@@ -101,6 +102,23 @@ export const useMonstrosStore = defineStore('monstros', {
       } catch (error) {
         this.error = error;
         console.error('Error uploading image:', error);
+        throw error;
+      } finally {
+        this.loading = false;
+      }
+    },
+    async deleteMonstro(monstroId) {
+      this.loading = true;
+      try {
+        const { error } = await supabase
+          .from('monstros')
+          .delete()
+          .eq('id', monstroId);
+        if (error) throw error;
+        this.monstros = this.monstros.filter(m => m.id !== monstroId);
+      } catch (error) {
+        this.error = error;
+        console.error('Error deleting monstro:', error);
         throw error;
       } finally {
         this.loading = false;

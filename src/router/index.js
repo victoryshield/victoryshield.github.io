@@ -8,6 +8,7 @@ import MestrandoView from '../views/MestrandoView.vue';
 import PersonagensView from '../views/PersonagensView.vue';
 import BestiarioView from '../views/BestiarioView.vue';
 import SessaoAtualView from '../views/SessaoAtualView.vue';
+import SessaoView from '../views/SessaoView.vue';
 import CampanhaView from '../views/CampanhaView.vue';
 import AuthView from '../views/AuthView.vue';
 import { useAuthStore } from '../stores/auth';
@@ -27,11 +28,13 @@ const routes = [
     path: '/combate',
     name: 'Combate',
     component: CombateView,
+    meta: { requiresAuth: true },
   },
   {
     path: '/manobras',
     name: 'Manobras',
     component: ManobrasView,
+    meta: { requiresAuth: true },
   },
   {
     path: '/regras',
@@ -42,31 +45,43 @@ const routes = [
     path: '/mestrando',
     name: 'Mestrando',
     component: MestrandoView,
+    meta: { requiresAuth: true },
   },
   {
     path: '/personagens',
     name: 'Personagens',
     component: PersonagensView,
+    meta: { requiresAuth: true },
   },
   {
     path: '/npcs',
     name: 'NPCs',
     component: NpcsView,
+    meta: { requiresAuth: true },
   },
   {
     path: '/bestiario',
     name: 'Bestiario',
     component: BestiarioView,
+    meta: { requiresAuth: true },
   },
   {
     path: '/sessao-atual',
     name: 'SessaoAtual',
     component: SessaoAtualView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/sessoes',
+    name: 'Sessoes',
+    component: SessaoView,
+    meta: { requiresAuth: true },
   },
   {
     path: '/campanha',
     name: 'Campanha',
     component: CampanhaView,
+    meta: { requiresAuth: true },
   },
 ];
 
@@ -92,3 +107,4 @@ router.beforeEach(async (to, from, next) => {
 });
 
 export default router;
+

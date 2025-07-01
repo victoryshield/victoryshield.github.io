@@ -38,9 +38,10 @@ export const useNpcsStore = defineStore('npcs', {
         if (!authStore.user) {
           throw new Error('User not authenticated.');
         }
+        const { id, ...rest } = npcData;
         const { data, error } = await supabase
           .from('npcs')
-          .insert([npcData])
+          .insert([rest])
           .select();
         if (error) throw error;
         this.npcs.push(data[0]);

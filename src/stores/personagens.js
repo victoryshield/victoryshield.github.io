@@ -38,9 +38,10 @@ export const usePersonagensStore = defineStore('personagens', {
         if (!authStore.user) {
           throw new Error('User not authenticated.');
         }
+        const { id, ...rest } = personagemData;
         const { data, error } = await supabase
           .from('personagens')
-          .insert([personagemData])
+          .insert([rest])
           .select();
         if (error) throw error;
         this.personagens.push(data[0]);

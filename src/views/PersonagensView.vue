@@ -14,25 +14,25 @@
         @update:selectedCampaignId="selectedCampaignId = $event"
         @selectEntity="selectPersonagem"
         @addEntity="addPersonagem"
-        @editEntity="editPersonagem"
         @deleteEntity="deletePersonagem"
-      />
+        @editEntity="editPersonagem"
+    />
 
-      <EntityDetailsView
-        :selectedEntity="selectedPersonagem"
-        :selectedCampaignName="selectedCampaignName"
-      />
-    </div>
-  </section>
-
-  <EditEntityForm
-    v-if="showPersonagemForm"
-    :entity-data="personagemToEdit"
-    entity-type="personagem" @close="handleCloseForm" />
-
-  <div v-if="message" :class="{'bg-green-500': messageType === 'success', 'bg-red-500': messageType === 'error'}" class="text-white p-3 rounded-lg mt-4 text-center">
-    {{ message }}
+    <EntityDetailsView
+      :selectedEntity="selectedPersonagem"
+      :selectedCampaignName="selectedCampaignName"
+      entity-type="personagem"
+      :is-edit-mode="isEditMode"
+      @entityUpdated="handleEntityUpdate"
+      @creationCancelled="cancelCreation"
+      @startEditing="startEditingFromDetails"
+    />
   </div>
+</section>
+
+<div v-if="message" :class="{'bg-green-500': messageType === 'success', 'bg-red-500': messageType === 'error'}" class="text-white p-3 rounded-lg mt-4 text-center">
+  {{ message }}
+</div>
 </template>
 
 <script setup>
@@ -40,8 +40,6 @@ import { onMounted, ref, computed, watch } from 'vue';
 import { usePersonagensStore } from '../stores/personagens';
 import { useAuthStore } from '../stores/auth';
 import { useCampaignsStore } from '../stores/campaigns';
-// Importe o novo componente genérico
-import EditEntityForm from '../components/EditEntityForm.vue';
 import EntityListView from '../components/EntityListView.vue';
 import EntityDetailsView from '../components/EntityDetailsView.vue';
 
@@ -50,8 +48,7 @@ const authStore = useAuthStore();
 const campaignsStore = useCampaignsStore();
 
 const selectedPersonagem = ref(null);
-const showPersonagemForm = ref(false);
-const personagemToEdit = ref(null);
+const isEditMode = ref(false);
 const message = ref('');
 const messageType = ref('');
 const selectedCampaignId = ref(null);
@@ -76,87 +73,77 @@ onMounted(async () => {
     }
     await personagensStore.fetchPersonagens(selectedCampaignId.value);
     if (filteredPersonagens.value.length > 0) {
-      selectedPersonagem.value = filteredPersonagens.value[0];
+      selectPersonagem(filteredPersonagens.value[0]);
+    } else {
+      isEditMode.value = true;
     }
   }
 });
 
 const selectPersonagem = (personagem) => {
   selectedPersonagem.value = personagem;
+  isEditMode.value = false;
 };
 
 const addPersonagem = () => {
-  personagemToEdit.value = null;
-  showPersonagemForm.value = true;
+  selectedPersonagem.value = null;
+  isEditMode.value = true;
 };
 
 const editPersonagem = (personagem) => {
-  personagemToEdit.value = { ...personagem };
-  showPersonagemForm.value = true;
+  selectedPersonagem.value = personagem;
+  isEditMode.value = true;
+};
+
+const cancelCreation = () => {
+  isEditMode.value = false;
+  if (!selectedPersonagem.value && filteredPersonagens.value.length > 0) {
+    selectPersonagem(filteredPersonagens.value[0]);
+  }
+};
+
+const startEditingFromDetails = () => {
+  isEditMode.value = true;
 };
 
 const deletePersonagem = async (id) => {
-  if (confirm('Tem certeza que deseja excluir este personagem?')) {
-    try {
-      await personagensStore.deletePersonagem(id);
-      message.value = 'Personagem excluído com sucesso!';
-      messageType.value = 'success';
-      // Removido o fetch aqui, será feito no handleCloseForm
-      selectedPersonagem.value = null;
-      setTimeout(() => { message.value = ''; messageType.value = ''; }, 3000);
-    } catch (error) {
-      message.value = `Erro ao excluir personagem: ${error.message}`;
-      messageType.value = 'error';
-      setTimeout(() => { message.value = ''; messageType.value = ''; }, 5000);
+  try {
+    await personagensStore.deletePersonagem(id);
+    message.value = 'Personagem excluído com sucesso!';
+    messageType.value = 'success';
+    selectedPersonagem.value = null;
+    isEditMode.value = false;
+    await personagensStore.fetchPersonagens(selectedCampaignId.value);
+    if (filteredPersonagens.value.length > 0) {
+      selectPersonagem(filteredPersonagens.value[0]);
     }
+    setTimeout(() => { message.value = ''; messageType.value = ''; }, 3000);
+  } catch (error) {
+    message.value = `Erro ao excluir personagem: ${error.message}`;
+    messageType.value = 'error';
+    setTimeout(() => { message.value = ''; messageType.value = ''; }, 5000);
   }
 };
 
-// Removido handleSavePersonagem, pois a lógica de save está no EditEntityForm
-
-const handleCloseForm = async () => {
-  showPersonagemForm.value = false;
-  personagemToEdit.value = null; // Limpa a entidade para edição
-
-  // 1. Recarrega a lista de personagens do store
+const handleEntityUpdate = async () => {
+  isEditMode.value = false;
   await personagensStore.fetchPersonagens(selectedCampaignId.value);
-
-  // 2. Após recarregar, atualiza a referência de selectedPersonagem
-  if (selectedPersonagem.value) {
-    // Tenta encontrar a versão atualizada do personagem na nova lista
-    const updatedPersonagem = personagensStore.personagens.find(
-      p => p.id === selectedPersonagem.value.id
-    );
-
-    if (updatedPersonagem) {
-      selectedPersonagem.value = updatedPersonagem; // Atribui a nova referência
-    } else {
-      // Se o personagem selecionado não for encontrado (ex: foi excluído), limpa a seleção
-      selectedPersonagem.value = null;
-    }
-  } 
-  
-  // Se não havia nenhum personagem selecionado antes de abrir o formulário
-  // (caso de adição de novo personagem) e agora existem personagens,
-  // selecione o primeiro da lista.
-  else if (filteredPersonagens.value.length > 0) {
-    selectedPersonagem.value = filteredPersonagens.value[0];
-  }
-
-  // Garante que selectedPersonagem é nulo se não houver personagens na lista filtrada
-  if (filteredPersonagens.value.length === 0) {
+  if (filteredPersonagens.value.length > 0) {
+    const updatedOrNewPersonagem = personagensStore.personagens.find(p => p.id === selectedPersonagem.value?.id) || filteredPersonagens.value[filteredPersonagens.value.length - 1];
+    selectPersonagem(updatedOrNewPersonagem);
+  } else {
     selectedPersonagem.value = null;
   }
 };
 
-// Watch for changes in selectedCampaignId and refetch characters
 watch(selectedCampaignId, async (newCampaignId) => {
   if (authStore.user) {
     await personagensStore.fetchPersonagens(newCampaignId);
     if (filteredPersonagens.value.length > 0) {
-      selectedPersonagem.value = filteredPersonagens.value[0];
+      selectPersonagem(filteredPersonagens.value[0]);
     } else {
       selectedPersonagem.value = null;
+      isEditMode.value = true;
     }
   }
 });
