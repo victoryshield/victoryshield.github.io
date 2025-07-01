@@ -23,6 +23,7 @@
       :selectedCampaignName="selectedCampaignName"
       entity-type="personagem"
       :is-edit-mode="isEditMode"
+      :loading="personagensStore.loading"
       @entityUpdated="handleEntityUpdate"
       @creationCancelled="cancelCreation"
       @startEditing="startEditingFromDetails"
@@ -75,7 +76,8 @@ onMounted(async () => {
     if (filteredPersonagens.value.length > 0) {
       selectPersonagem(filteredPersonagens.value[0]);
     } else {
-      isEditMode.value = true;
+      selectedPersonagem.value = null;
+      isEditMode.value = false;
     }
   }
 });
@@ -143,7 +145,7 @@ watch(selectedCampaignId, async (newCampaignId) => {
       selectPersonagem(filteredPersonagens.value[0]);
     } else {
       selectedPersonagem.value = null;
-      isEditMode.value = true;
+      isEditMode.value = false;
     }
   }
 });

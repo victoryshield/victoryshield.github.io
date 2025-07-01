@@ -23,6 +23,7 @@
       :selectedCampaignName="selectedCampaignName"
       entity-type="npc"
       :is-edit-mode="isEditMode"
+      :loading="npcsStore.loading"
       @entityUpdated="handleEntityUpdate"
       @creationCancelled="cancelCreation"
       @startEditing="startEditingFromDetails"
@@ -75,7 +76,8 @@ onMounted(async () => {
     if (filteredNpcs.value.length > 0) {
       selectNpc(filteredNpcs.value[0]);
     } else {
-      isEditMode.value = true; // Abre o formulário se não houver NPCs
+      selectedNpc.value = null;
+      isEditMode.value = false;
     }
   }
 });
@@ -143,7 +145,7 @@ watch(selectedCampaignId, async (newCampaignId) => {
       selectNpc(filteredNpcs.value[0]);
     } else {
       selectedNpc.value = null;
-      isEditMode.value = true; // Abre o formulário se não houver NPCs na nova campanha
+      isEditMode.value = false;
     }
   }
 });

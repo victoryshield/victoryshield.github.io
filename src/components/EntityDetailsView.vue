@@ -1,7 +1,12 @@
 <template>
   <div class="md:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-lg shadow min-h-[400px]">
+    <!-- ESTADO DE CARREGAMENTO -->
+    <div v-if="loading" class="text-center text-slate-500 dark:text-slate-400 flex items-center justify-center h-full">
+      <p class="text-lg">Carregando {{ entityTypeName }}s...</p>
+    </div>
+
     <!-- FORMULÁRIO DINÂMICO -->
-    <div v-if="isEditMode || !selectedEntity">
+    <div v-else-if="isEditMode">
       <EntityForm
         :entity="selectedEntity"
         :entityName="entityTypeName"
@@ -84,9 +89,12 @@
       </div>
     </div>
 
-    <!-- MENSAGEM INICIAL -->
-    <div v-else class="text-center text-slate-500 dark:text-slate-400">
-      Selecione um item na lista para ver os detalhes ou adicione um novo.
+    <!-- MENSAGEM INICIAL / SEM SELEÇÃO -->
+    <div v-else class="text-center text-slate-500 dark:text-slate-400 flex items-center justify-center h-full">
+      <div>
+        <p class="text-lg">Selecione um item na lista para ver os detalhes.</p>
+        <p class="text-sm">Ou adicione um novo para começar.</p>
+      </div>
     </div>
   </div>
 </template>
@@ -116,6 +124,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  loading: {
+    type: Boolean,
+    default: false,
+  }
 });
 
 const emit = defineEmits(['entityUpdated', 'creationCancelled']);

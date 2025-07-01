@@ -23,6 +23,7 @@
       :selectedCampaignName="selectedCampaignName"
       entity-type="monstro"
       :is-edit-mode="isEditMode"
+      :loading="monstrosStore.loading"
       @entityUpdated="handleEntityUpdate"
       @creationCancelled="cancelCreation"
       @startEditing="startEditingFromDetails"
@@ -75,7 +76,8 @@ onMounted(async () => {
     if (filteredMonstros.value.length > 0) {
       selectMonstro(filteredMonstros.value[0]);
     } else {
-      isEditMode.value = true;
+      selectedMonstro.value = null;
+      isEditMode.value = false;
     }
   }
 });
@@ -143,7 +145,7 @@ watch(selectedCampaignId, async (newCampaignId) => {
       selectMonstro(filteredMonstros.value[0]);
     } else {
       selectedMonstro.value = null;
-      isEditMode.value = true;
+      isEditMode.value = false;
     }
   }
 });
