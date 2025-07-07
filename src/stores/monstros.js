@@ -17,10 +17,10 @@ export const useMonstrosStore = defineStore('monstros', {
           .from('monstros')
           .select(
             `id, name, archetype, concept, pontos, Habilidade, Poder, Resistencia, Pontos_Acao, Pontos_Mana, Pontos_Vida, image, campaign_id,
-            monstros_pericias(pericia_id, pericias(id, name)),
-            monstros_vantagens(vantagem_id, vantagens(id, name)),
-            monstros_desvantagens(desvantagem_id, desvantagens(id, name)),
-            monstros_tecnicas(tecnica_id, tecnicas(id, name))`
+            monstros_pericias!left(*, pericias(id, name)),
+            monstros_vantagens!left(*, vantagens(id, name)),
+            monstros_desvantagens!left(*, desvantagens(id, name)),
+            monstros_tecnicas!left(*, tecnicas(id, name))`
           );
 
         if (campaignId) {
@@ -45,9 +45,16 @@ export const useMonstrosStore = defineStore('monstros', {
           throw new Error('User not authenticated.');
         }
         const { id, pericias, vantagens, desvantagens, tecnicas, ...rest } = monstroData;
+        // Filter out relation properties from the rest object before inserting
+        const cleanRest = { ...rest };
+        delete cleanRest.monstros_pericias;
+        delete cleanRest.monstros_vantagens;
+        delete cleanRest.monstros_desvantagens;
+        delete cleanRest.monstros_tecnicas;
+
         const { data: newMonstro, error: monstroError } = await supabase
           .from('monstros')
-          .insert([rest])
+          .insert([cleanRest])
           .select();
         if (monstroError) throw monstroError;
 
@@ -55,28 +62,44 @@ export const useMonstrosStore = defineStore('monstros', {
 
         // Insert related data
         if (pericias && pericias.length > 0) {
-          const { error: periciasError } = await supabase
-            .from('monstros_pericias')
-            .insert(pericias.map(p => ({ monstro_id: monstroId, pericia_id: p.pericia_id })));
-          if (periciasError) throw periciasError;
+          const filteredPericias = pericias.filter(p => p.pericia_id !== null);
+          console.log('Filtered Pericias for insert:', filteredPericias);
+          if (filteredPericias.length > 0) {
+            const { error: periciasError } = await supabase
+              .from('monstros_pericias')
+              .insert(filteredPericias.map(p => ({ monstro_id: monstroId, pericia_id: p.pericia_id })));
+            if (periciasError) throw periciasError;
+          }
         }
         if (vantagens && vantagens.length > 0) {
-          const { error: vantagensError } = await supabase
-            .from('monstros_vantagens')
-            .insert(vantagens.map(v => ({ monstro_id: monstroId, vantagem_id: v.vantagem_id })));
-          if (vantagensError) throw vantagensError;
+          const filteredVantagens = vantagens.filter(v => v.vantagem_id !== null);
+          console.log('Filtered Vantagens for insert:', filteredVantagens);
+          if (filteredVantagens.length > 0) {
+            const { error: vantagensError } = await supabase
+              .from('monstros_vantagens')
+              .insert(filteredVantagens.map(v => ({ monstro_id: monstroId, vantagem_id: v.vantagem_id })));
+            if (vantagensError) throw vantagensError;
+          }
         }
         if (desvantagens && desvantagens.length > 0) {
-          const { error: desvantagensError } = await supabase
-            .from('monstros_desvantagens')
-            .insert(desvantagens.map(d => ({ monstro_id: monstroId, desvantagem_id: d.desvantagem_id })));
-          if (desvantagensError) throw desvantagensError;
+          const filteredDesvantagens = desvantagens.filter(d => d.desvantagem_id !== null);
+          console.log('Filtered Desvantagens for insert:', filteredDesvantagens);
+          if (filteredDesvantagens.length > 0) {
+            const { error: desvantagensError } = await supabase
+              .from('monstros_desvantagens')
+              .insert(filteredDesvantagens.map(d => ({ monstro_id: monstroId, desvantagem_id: d.desvantagem_id })));
+            if (desvantagensError) throw desvantagensError;
+          }
         }
         if (tecnicas && tecnicas.length > 0) {
-          const { error: tecnicasError } = await supabase
-            .from('monstros_tecnicas')
-            .insert(tecnicas.map(t => ({ monstro_id: monstroId, tecnica_id: t.tecnica_id })));
-          if (tecnicasError) throw tecnicasError;
+          const filteredTecnicas = tecnicas.filter(t => t.tecnica_id !== null);
+          console.log('Filtered Tecnicas for insert:', filteredTecnicas);
+          if (filteredTecnicas.length > 0) {
+            const { error: tecnicasError } = await supabase
+              .from('monstros_tecnicas')
+              .insert(filteredTecnicas.map(t => ({ monstro_id: monstroId, tecnica_id: t.tecnica_id })));
+            if (tecnicasError) throw tecnicasError;
+          }
         }
 
         // Re-fetch the newly added monstro with all its relations
@@ -84,10 +107,10 @@ export const useMonstrosStore = defineStore('monstros', {
           .from('monstros')
           .select(
             `id, name, archetype, concept, pontos, Habilidade, Poder, Resistencia, Pontos_Acao, Pontos_Mana, Pontos_Vida, image, campaign_id,
-            monstros_pericias(pericia_id, pericias(id, name)),
-            monstros_vantagens(vantagem_id, vantagens(id, name)),
-            monstros_desvantagens(desvantagem_id, desvantagens(id, name)),
-            monstros_tecnicas(tecnica_id, tecnicas(id, name))`
+            monstros_pericias!left(*, pericias(id, name)),
+            monstros_vantagens!left(*, vantagens(id, name)),
+            monstros_desvantagens!left(*, desvantagens(id, name)),
+            monstros_tecnicas!left(*, tecnicas(id, name))`
           )
           .eq('id', monstroId)
           .single();
@@ -109,10 +132,16 @@ export const useMonstrosStore = defineStore('monstros', {
           throw new Error('User not authenticated.');
         }
         const { id, pericias, vantagens, desvantagens, tecnicas, ...rest } = monstroData;
+        // Filter out relation properties from the rest object before updating
+        const cleanRest = { ...rest };
+        delete cleanRest.monstros_pericias;
+        delete cleanRest.monstros_vantagens;
+        delete cleanRest.monstros_desvantagens;
+        delete cleanRest.monstros_tecnicas;
 
         const { error: updateError } = await supabase
           .from('monstros')
-          .update(rest)
+          .update(cleanRest)
           .eq('id', id);
         if (updateError) throw updateError;
 
@@ -120,37 +149,57 @@ export const useMonstrosStore = defineStore('monstros', {
         // Pericias
         await supabase.from('monstros_pericias').delete().eq('monstro_id', id);
         if (pericias && pericias.length > 0) {
-          const { error: periciasError } = await supabase
-            .from('monstros_pericias')
-            .insert(pericias.map(p => ({ monstro_id: id, pericia_id: p.pericia_id })));
-          if (periciasError) throw periciasError;
+          console.log('Raw Pericias before filter:', JSON.stringify(pericias, null, 2));
+          const filteredPericias = pericias.filter(p => p.pericia_id !== null);
+          console.log('Filtered Pericias for update:', JSON.stringify(filteredPericias, null, 2));
+          if (filteredPericias.length > 0) {
+            const { error: periciasError } = await supabase
+              .from('monstros_pericias')
+              .insert(pericias.filter(p => p.pericia_id !== null).map(p => ({ monstro_id: id, pericia_id: p.pericia_id })));
+            if (periciasError) throw periciasError;
+          }
         }
 
         // Vantagens
         await supabase.from('monstros_vantagens').delete().eq('monstro_id', id);
         if (vantagens && vantagens.length > 0) {
-          const { error: vantagensError } = await supabase
-            .from('monstros_vantagens')
-            .insert(vantagens.map(v => ({ monstro_id: id, vantagem_id: v.vantagem_id })));
-          if (vantagensError) throw vantagensError;
+          console.log('Raw Vantagens before filter:', JSON.stringify(vantagens, null, 2));
+          const filteredVantagens = vantagens.filter(v => v.vantagem_id !== null);
+          console.log('Filtered Vantagens for update:', JSON.stringify(filteredVantagens, null, 2));
+          if (filteredVantagens.length > 0) {
+            const { error: vantagensError } = await supabase
+              .from('monstros_vantagens')
+              .insert(vantagens.filter(v => v.vantagem_id !== null).map(v => ({ monstro_id: id, vantagem_id: v.vantagem_id })));
+            if (vantagensError) throw vantagensError;
+          }
         }
 
         // Desvantagens
         await supabase.from('monstros_desvantagens').delete().eq('monstro_id', id);
         if (desvantagens && desvantagens.length > 0) {
-          const { error: desvantagensError } = await supabase
-            .from('monstros_desvantagens')
-            .insert(desvantagens.map(d => ({ monstro_id: id, desvantagem_id: d.desvantagem_id })));
-          if (desvantagensError) throw desvantagensError;
+          console.log('Raw Desvantagens before filter:', JSON.stringify(desvantagens, null, 2));
+          const filteredDesvantagens = desvantagens.filter(d => d.desvantagem_id !== null);
+          console.log('Filtered Desvantagens for update:', JSON.stringify(filteredDesvantagens, null, 2));
+          if (filteredDesvantagens.length > 0) {
+            const { error: desvantagensError } = await supabase
+              .from('monstros_desvantagens')
+              .insert(desvantagens.filter(d => d.desvantagem_id !== null).map(d => ({ monstro_id: id, desvantagem_id: d.desvantagem_id })));
+            if (desvantagensError) throw desvantagensError;
+          }
         }
 
         // Tecnicas
         await supabase.from('monstros_tecnicas').delete().eq('monstro_id', id);
         if (tecnicas && tecnicas.length > 0) {
-          const { error: tecnicasError } = await supabase
-            .from('monstros_tecnicas')
-            .insert(tecnicas.map(t => ({ monstro_id: id, tecnica_id: t.tecnica_id })));
-          if (tecnicasError) throw tecnicasError;
+          console.log('Raw Tecnicas before filter:', JSON.stringify(tecnicas, null, 2));
+          const filteredTecnicas = tecnicas.filter(t => t.tecnica_id !== null);
+          console.log('Filtered Tecnicas for update:', JSON.stringify(filteredTecnicas, null, 2));
+          if (filteredTecnicas.length > 0) {
+            const { error: tecnicasError } = await supabase
+              .from('monstros_tecnicas')
+              .insert(tecnicas.filter(t => t.tecnica_id !== null).map(t => ({ monstro_id: id, tecnica_id: t.tecnica_id })));
+            if (tecnicasError) throw tecnicasError;
+          }
         }
 
         // Re-fetch the updated monstro with all its relations
@@ -158,10 +207,10 @@ export const useMonstrosStore = defineStore('monstros', {
           .from('monstros')
           .select(
             `id, name, archetype, concept, pontos, Habilidade, Poder, Resistencia, Pontos_Acao, Pontos_Mana, Pontos_Vida, image, campaign_id,
-            monstros_pericias(pericia_id, pericias(id, name)),
-            monstros_vantagens(vantagem_id, vantagens(id, name)),
-            monstros_desvantagens(desvantagem_id, desvantagens(id, name)),
-            monstros_tecnicas(tecnica_id, tecnicas(id, name))`
+            monstros_pericias!left(*, pericias(id, name)),
+            monstros_vantagens!left(*, vantagens(id, name)),
+            monstros_desvantagens!left(*, desvantagens(id, name)),
+            monstros_tecnicas!left(*, tecnicas(id, name))`
           )
           .eq('id', id)
           .single();
@@ -181,14 +230,13 @@ export const useMonstrosStore = defineStore('monstros', {
     async uploadImage(file) {
       this.loading = true;
       try {
-        const authStore = useAuthStore(); // Adicionado
-        if (!authStore.user) { // Adicionado
-          throw new Error('User not authenticated.'); // Adicionado
+        const authStore = useAuthStore();
+        if (!authStore.user) {
+          throw new Error('User not authenticated.');
         }
         const fileExt = file.name.split('.').pop();
         const fileName = `${uuidv4()}.${fileExt}`;
-        // Caminho do arquivo modificado para incluir o UID do usuário
-        const filePath = `${authStore.user.id}/monstros/${fileName}`; // MODIFICADO
+        const filePath = `${authStore.user.id}/monstros/${fileName}`;
 
         const { error: uploadError } = await supabase.storage
           .from('images')

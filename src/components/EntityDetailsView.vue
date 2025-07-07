@@ -72,9 +72,9 @@
           <div class="mb-4">
             <h4 class="font-bold mb-1 flex items-center gap-x-2 dark:text-slate-100"><i
                 class="fa-solid fa-graduation-cap fa-fw text-slate-500"></i><span>Perícias</span></h4>
-            <ul v-if="selectedEntity.pericias && selectedEntity.pericias.length > 0"
+            <ul v-if="selectedEntity.personagens_pericias && selectedEntity.personagens_pericias.length > 0"
               class="list-disc list-inside ml-4 text-slate-600 dark:text-slate-400">
-              <li v-for="p in selectedEntity.pericias" :key="p.pericia_id">{{ p.pericias.name }}</li>
+              <li v-for="p in selectedEntity.personagens_pericias" :key="p.pericia_id">{{ p.pericias.name }}</li>
             </ul>
             <p v-else class="text-slate-600 dark:text-slate-400">Nenhuma</p>
           </div>
@@ -83,9 +83,9 @@
           <div class="mb-4">
             <h4 class="font-bold mb-1 flex items-center gap-x-2 dark:text-slate-100"><i
                 class="fa-solid fa-thumbs-up fa-fw text-green-600"></i><span>Vantagens</span></h4>
-            <ul v-if="selectedEntity.vantagens && selectedEntity.vantagens.length > 0"
+            <ul v-if="selectedEntity.personagens_vantagens && selectedEntity.personagens_vantagens.length > 0"
               class="list-disc list-inside ml-4 text-slate-600 dark:text-slate-400">
-              <li v-for="v in selectedEntity.vantagens" :key="v.vantagem_id">{{ v.vantagens.name }}</li>
+              <li v-for="v in selectedEntity.personagens_vantagens" :key="v.vantagem_id">{{ v.vantagens.name }}</li>
             </ul>
             <p v-else class="text-slate-600 dark:text-slate-400">Nenhuma</p>
           </div>
@@ -94,9 +94,9 @@
           <div class="mb-4">
             <h4 class="font-bold mb-1 flex items-center gap-x-2 dark:text-slate-100"><i
                 class="fa-solid fa-thumbs-down fa-fw text-red-600"></i><span>Desvantagens</span></h4>
-            <ul v-if="selectedEntity.desvantagens && selectedEntity.desvantagens.length > 0"
+            <ul v-if="selectedEntity.personagens_desvantagens && selectedEntity.personagens_desvantagens.length > 0"
               class="list-disc list-inside ml-4 text-slate-600 dark:text-slate-400">
-              <li v-for="d in selectedEntity.desvantagens" :key="d.desvantagem_id">{{ d.desvantagens.name }}</li>
+              <li v-for="d in selectedEntity.personagens_desvantagens" :key="d.desvantagem_id">{{ d.desvantagens.name }}</li>
             </ul>
             <p v-else class="text-slate-600 dark:text-slate-400">Nenhuma</p>
           </div>
@@ -105,9 +105,9 @@
           <div class="mb-4">
             <h4 class="font-bold mb-1 flex items-center gap-x-2 dark:text-slate-100"><i
                 class="fa-solid fa-hat-wizard fa-fw text-purple-600"></i><span>Técnicas</span></h4>
-            <ul v-if="selectedEntity.tecnicas && selectedEntity.tecnicas.length > 0"
+            <ul v-if="selectedEntity.personagens_tecnicas && selectedEntity.personagens_tecnicas.length > 0"
               class="list-disc list-inside ml-4 text-slate-600 dark:text-slate-400">
-              <li v-for="t in selectedEntity.tecnicas" :key="t.tecnica_id">{{ t.tecnicas.name }}</li>
+              <li v-for="t in selectedEntity.personagens_tecnicas" :key="t.tecnicas.name">{{ t.tecnicas.name }}</li>
             </ul>
             <p v-else class="text-slate-600 dark:text-slate-400">Nenhuma</p>
           </div>
@@ -116,6 +116,12 @@
     </div>
     <div v-else>
       <p class="text-lg text-center text-slate-600 dark:text-slate-400">Selecione uma entidade para ver os detalhes.</p>
+    </div>
+
+    <!-- Debug: Exibir objeto completo -->
+    <div v-if="selectedEntity" class="mt-8 p-4 bg-slate-100 dark:bg-slate-700 rounded-lg shadow-inner">
+      <h4 class="font-bold mb-2 text-slate-800 dark:text-slate-100">Objeto Completo (Debug):</h4>
+      <pre class="whitespace-pre-wrap break-all text-sm text-slate-700 dark:text-slate-200">{{ JSON.stringify(selectedEntity, null, 2) }}</pre>
     </div>
   </div>
 </template>

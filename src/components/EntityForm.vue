@@ -149,7 +149,7 @@
       <!-- Pericias -->
       <div class="mt-6 p-4 border rounded-lg shadow-sm bg-slate-50 dark:bg-slate-700 border-gray-300 dark:border-slate-600">
         <h3 class="text-lg font-bold mb-3 text-slate-800 dark:text-slate-100 flex items-center gap-x-2"><font-awesome-icon :icon="['fas', 'graduation-cap']" /><span>Perícias</span></h3>
-        <div v-for="(pericia, index) in formData.pericias" :key="index" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3 items-end p-3 border rounded-lg bg-white dark:bg-slate-800">
+        <div v-for="(pericia, index) in formData.pericias" :key="pericia._tempId || index" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3 items-end p-3 border rounded-lg bg-white dark:bg-slate-800">
           <div class="relative">
             <label :for="`pericia-id-${index}`" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Perícia:</label>
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
@@ -164,7 +164,7 @@
               <option v-for="p in periciasStore.pericias" :key="p.id" :value="p.id">{{ p.name }}</option>
             </select>
           </div>
-          <button type="button" @click="removeVantagem(index)" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center justify-center gap-x-2">
+          <button type="button" @click="removePericia(index)" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center justify-center gap-x-2">
             <font-awesome-icon :icon="['fas', 'trash']" />
             <span>Remover</span>
           </button>
@@ -178,7 +178,7 @@
       <!-- Vantagens -->
       <div class="mt-6 p-4 border rounded-lg shadow-sm bg-slate-50 dark:bg-slate-700 border-gray-300 dark:border-slate-600">
         <h3 class="text-lg font-bold mb-3 text-slate-800 dark:text-slate-100 flex items-center gap-x-2"><font-awesome-icon :icon="['fas', 'thumbs-up']" /><span>Vantagens</span></h3>
-        <div v-for="(vantagem, index) in formData.vantagens" :key="index" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3 items-end p-3 border rounded-lg bg-white dark:bg-slate-800">
+        <div v-for="(vantagem, index) in formData.vantagens" :key="vantagem._tempId || index" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3 items-end p-3 border rounded-lg bg-white dark:bg-slate-800">
           <div class="relative">
             <label :for="`vantagem-id-${index}`" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Vantagem:</label>
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
@@ -207,7 +207,7 @@
       <!-- Desvantagens -->
       <div class="mt-6 p-4 border rounded-lg shadow-sm bg-slate-50 dark:bg-slate-700 border-gray-300 dark:border-slate-600">
         <h3 class="text-lg font-bold mb-3 text-slate-800 dark:text-slate-100 flex items-center gap-x-2"><font-awesome-icon :icon="['fas', 'thumbs-down']" /><span>Desvantagens</span></h3>
-        <div v-for="(desvantagem, index) in formData.desvantagens" :key="index" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3 items-end p-3 border rounded-lg bg-white dark:bg-slate-800">
+        <div v-for="(desvantagem, index) in formData.desvantagens" :key="desvantagem._tempId || index" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3 items-end p-3 border rounded-lg bg-white dark:bg-slate-800">
           <div class="relative">
             <label :for="`desvantagem-id-${index}`" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Desvantagem:</label>
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
@@ -236,7 +236,7 @@
       <!-- Tecnicas -->
       <div class="mt-6 p-4 border rounded-lg shadow-sm bg-slate-50 dark:bg-slate-700 border-gray-300 dark:border-slate-600">
         <h3 class="text-lg font-bold mb-3 text-slate-800 dark:text-slate-100 flex items-center gap-x-2"><font-awesome-icon :icon="['fas', 'hat-wizard']" /><span>Técnicas</span></h3>
-        <div v-for="(tecnica, index) in formData.tecnicas" :key="index" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3 items-end p-3 border rounded-lg bg-white dark:bg-slate-800">
+        <div v-for="(tecnica, index) in formData.tecnicas" :key="tecnica._tempId || index" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3 items-end p-3 border rounded-lg bg-white dark:bg-slate-800">
           <div class="relative">
             <label :for="`tecnica-id-${index}`" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Técnica:</label>
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
@@ -285,6 +285,7 @@
 
 <script setup>
 import { ref, watch, computed, onMounted } from 'vue';
+import { v4 as uuidv4 } from 'uuid';
 import { usePericiasStore } from '../stores/pericias';
 import { useVantagensStore } from '../stores/vantagens';
 import { useDesvantagensStore } from '../stores/desvantagens';
@@ -351,12 +352,34 @@ const entityTypeName = computed(() => {
 
 watch(() => props.entity, (newEntity) => {
   if (newEntity) {
+    let pericias = [];
+    let vantagens = [];
+    let desvantagens = [];
+    let tecnicas = [];
+
+    if (props.entityType === 'personagem') {
+      pericias = newEntity.personagens_pericias ? newEntity.personagens_pericias.map(p => ({ pericia_id: p.pericia_id, _tempId: uuidv4() })) : [];
+      vantagens = newEntity.personagens_vantagens ? newEntity.personagens_vantagens.map(v => ({ vantagem_id: v.vantagem_id, _tempId: uuidv4() })) : [];
+      desvantagens = newEntity.personagens_desvantagens ? newEntity.personagens_desvantagens.map(d => ({ desvantagem_id: d.desvantagem_id, _tempId: uuidv4() })) : [];
+      tecnicas = newEntity.personagens_tecnicas ? newEntity.personagens_tecnicas.map(t => ({ tecnica_id: t.tecnica_id, _tempId: uuidv4() })) : [];
+    } else if (props.entityType === 'npc') {
+      pericias = newEntity.npcs_pericias ? newEntity.npcs_pericias.map(p => ({ pericia_id: p.pericia_id, _tempId: uuidv4() })) : [];
+      vantagens = newEntity.npcs_vantagens ? newEntity.npcs_vantagens.map(v => ({ vantagem_id: v.vantagem_id, _tempId: uuidv4() })) : [];
+      desvantagens = newEntity.npcs_desvantagens ? newEntity.npcs_desvantagens.map(d => ({ desvantagem_id: d.desvantagem_id, _tempId: uuidv4() })) : [];
+      tecnicas = newEntity.npcs_tecnicas ? newEntity.npcs_tecnicas.map(t => ({ tecnica_id: t.tecnica_id, _tempId: uuidv4() })) : [];
+    } else if (props.entityType === 'monstro') {
+      pericias = newEntity.monstros_pericias ? newEntity.monstros_pericias.map(p => ({ pericia_id: p.pericia_id, _tempId: uuidv4() })) : [];
+      vantagens = newEntity.monstros_vantagens ? newEntity.monstros_vantagens.map(v => ({ vantagem_id: v.vantagem_id, _tempId: uuidv4() })) : [];
+      desvantagens = newEntity.monstros_desvantagens ? newEntity.monstros_desvantagens.map(d => ({ desvantagem_id: d.desvantagem_id, _tempId: uuidv4() })) : [];
+      tecnicas = newEntity.monstros_tecnicas ? newEntity.monstros_tecnicas.map(t => ({ tecnica_id: t.tecnica_id, _tempId: uuidv4() })) : [];
+    }
+
     formData.value = {
       ...newEntity,
-      pericias: newEntity.pericias || [],
-      vantagens: newEntity.vantagens || [],
-      desvantagens: newEntity.desvantagens || [],
-      tecnicas: newEntity.tecnicas || [],
+      pericias: pericias,
+      vantagens: vantagens,
+      desvantagens: desvantagens,
+      tecnicas: tecnicas,
     };
   } else {
     // Reset form for new entity creation
@@ -385,35 +408,47 @@ const handleImageUpload = (url) => {
 };
 
 const addPericia = () => {
-  formData.value.pericias.push({ pericia_id: null });
+  formData.value.pericias.push({ pericia_id: null, _tempId: uuidv4() });
 };
 const removePericia = (index) => {
   formData.value.pericias.splice(index, 1);
 };
 
 const addVantagem = () => {
-  formData.value.vantagens.push({ vantagem_id: null });
+  formData.value.vantagens.push({ vantagem_id: null, _tempId: uuidv4() });
 };
 const removeVantagem = (index) => {
   formData.value.vantagens.splice(index, 1);
 };
 
 const addDesvantagem = () => {
-  formData.value.desvantagens.push({ desvantagem_id: null });
+  formData.value.desvantagens.push({ desvantagem_id: null, _tempId: uuidv4() });
 };
 const removeDesvantagem = (index) => {
   formData.value.desvantagens.splice(index, 1);
 };
 
 const addTecnica = () => {
-  formData.value.tecnicas.push({ tecnica_id: null });
+  formData.value.tecnicas.push({ tecnica_id: null, _tempId: uuidv4() });
 };
 const removeTecnica = (index) => {
   formData.value.tecnicas.splice(index, 1);
 };
 
 const submitForm = () => {
-  emit('save', { ...formData.value, campaign_id: props.campaignId });
+  const dataToSave = { ...formData.value, campaign_id: props.campaignId };
+
+  // Filter out relations with null IDs before saving
+  dataToSave.pericias = dataToSave.pericias.filter(p => p.pericia_id !== null && p.pericia_id !== undefined);
+  dataToSave.vantagens = dataToSave.vantagens.filter(v => v.vantagem_id !== null && v.vantagem_id !== undefined);
+  dataToSave.desvantagens = dataToSave.desvantagens.filter(d => d.desvantagem_id !== null && d.desvantagem_id !== undefined);
+  dataToSave.tecnicas = dataToSave.tecnicas.filter(t => t.tecnica_id !== null && t.tecnica_id !== undefined);
+
+  console.log('Data to save - Pericias:', JSON.parse(JSON.stringify(dataToSave.pericias)));
+  console.log('Data to save - Vantagens:', JSON.parse(JSON.stringify(dataToSave.vantagens)));
+  console.log('Data to save - Desvantagens:', JSON.parse(JSON.stringify(dataToSave.desvantagens)));
+  console.log('Data to save - Tecnicas:', JSON.parse(JSON.stringify(dataToSave.tecnicas)));
+  emit('save', dataToSave);
 };
 
 onMounted(async () => {
