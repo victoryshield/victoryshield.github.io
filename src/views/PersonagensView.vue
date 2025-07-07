@@ -16,24 +16,36 @@
         @addEntity="addPersonagem"
         @deleteEntity="deletePersonagem"
         @editEntity="editPersonagem"
-    />
+      />
 
-    <EntityDetailsView
-      :selectedEntity="selectedPersonagem"
-      :selectedCampaignName="selectedCampaignName"
-      entity-type="personagem"
-      :is-edit-mode="isEditMode"
-      :loading="personagensStore.loading"
-      @entityUpdated="handleEntityUpdate"
-      @creationCancelled="cancelCreation"
-      @startEditing="startEditingFromDetails"
-    />
+      <EntityForm
+        v-if="isEditMode"
+        :entity="selectedPersonagem"
+        entityType="personagem"
+        :campaignId="selectedCampaignId"
+        :isEditMode="isEditMode"
+        @save="handleSave"
+        @close="handleClose"
+        class="md:col-span-2"
+      />
+
+      <EntityDetailsView
+        v-else-if="selectedPersonagem"
+        :selectedEntity="selectedPersonagem"
+        :selectedCampaignName="selectedCampaignName"
+        entity-type="personagem"
+        :loading="personagensStore.loading"
+      />
+
+      <div v-else class="md:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-lg shadow-lg flex items-center justify-center">
+        <p class="text-slate-600 dark:text-slate-400 text-lg">Selecione um personagem ou adicione um novo.</p>
+      </div>
+    </div>
+  </section>
+
+  <div v-if="message" :class="{'bg-green-500': messageType === 'success', 'bg-red-500': messageType === 'error'}" class="text-white p-3 rounded-lg mt-4 text-center">
+    {{ message }}
   </div>
-</section>
-
-<div v-if="message" :class="{'bg-green-500': messageType === 'success', 'bg-red-500': messageType === 'error'}" class="text-white p-3 rounded-lg mt-4 text-center">
-  {{ message }}
-</div>
 </template>
 
 <script setup>
@@ -42,6 +54,7 @@ import { usePersonagensStore } from '../stores/personagens';
 import { useAuthStore } from '../stores/auth';
 import { useCampaignsStore } from '../stores/campaigns';
 import EntityListView from '../components/EntityListView.vue';
+import EntityForm from '../components/EntityForm.vue';
 import EntityDetailsView from '../components/EntityDetailsView.vue';
 
 const personagensStore = usePersonagensStore();
@@ -97,15 +110,37 @@ const editPersonagem = (personagem) => {
   isEditMode.value = true;
 };
 
-const cancelCreation = () => {
+const handleSave = async (entityData) => {
+  try {
+    if (entityData.id) {
+      await personagensStore.updatePersonagem(entityData);
+      message.value = 'Personagem atualizado com sucesso!';
+    } else {
+      await personagensStore.addPersonagem(entityData);
+      message.value = 'Personagem adicionado com sucesso!';
+    }
+    messageType.value = 'success';
+    isEditMode.value = false;
+    await personagensStore.fetchPersonagens(selectedCampaignId.value);
+    if (filteredPersonagens.value.length > 0) {
+      const updatedOrNewPersonagem = personagensStore.personagens.find(p => p.id === entityData.id) || filteredPersonagens.value[filteredPersonagens.value.length - 1];
+      selectPersonagem(updatedOrNewPersonagem);
+    } else {
+      selectedPersonagem.value = null;
+    }
+  } catch (error) {
+    message.value = `Erro ao salvar personagem: ${error.message}`;
+    messageType.value = 'error';
+  } finally {
+    setTimeout(() => { message.value = ''; messageType.value = ''; }, 3000);
+  }
+};
+
+const handleClose = () => {
   isEditMode.value = false;
   if (!selectedPersonagem.value && filteredPersonagens.value.length > 0) {
     selectPersonagem(filteredPersonagens.value[0]);
   }
-};
-
-const startEditingFromDetails = () => {
-  isEditMode.value = true;
 };
 
 const deletePersonagem = async (id) => {
@@ -124,17 +159,6 @@ const deletePersonagem = async (id) => {
     message.value = `Erro ao excluir personagem: ${error.message}`;
     messageType.value = 'error';
     setTimeout(() => { message.value = ''; messageType.value = ''; }, 5000);
-  }
-};
-
-const handleEntityUpdate = async () => {
-  isEditMode.value = false;
-  await personagensStore.fetchPersonagens(selectedCampaignId.value);
-  if (filteredPersonagens.value.length > 0) {
-    const updatedOrNewPersonagem = personagensStore.personagens.find(p => p.id === selectedPersonagem.value?.id) || filteredPersonagens.value[filteredPersonagens.value.length - 1];
-    selectPersonagem(updatedOrNewPersonagem);
-  } else {
-    selectedPersonagem.value = null;
   }
 };
 

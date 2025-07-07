@@ -1,57 +1,144 @@
 <template>
-  <section id="sessao-atual">
-    <div class="grid grid-cols-1 gap-6">
-      <SessionDetailsView
-        v-if="selectedSession || sessionsStore.loading"
-        :selectedSession="selectedSession"
-        :selectedCampaignName="selectedCampaignName"
-        :is-edit-mode="false"
+  <section id="sessoes" class="h-full">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
+      <EntityListView
+        :entities="sessionsStore.sessions"
+        :selectedEntity="sessionsStore.activeSession"
         :loading="sessionsStore.loading"
+        :error="sessionsStore.error"
+        entityTitle="Sessões"
+        :entityIcon="['fas', 'scroll']"
+        :showCampaignFilter="true"
+        :campaigns="campaignsStore.campaigns"
+        :selectedCampaignId="campaignsStore.activeCampaign?.id"
+        @update:selectedCampaignId="campaignsStore.setActiveCampaign(campaignsStore.campaigns.find(c => c.id === $event))"
+        @selectEntity="selectSession"
+        @addEntity="addSession"
+        @deleteEntity="deleteSession"
+        @editEntity="editSession"
+        class="h-full overflow-y-auto"
       />
-      <div v-else class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow min-h-[400px] flex items-center justify-center">
-        <div class="text-center text-slate-500 dark:text-slate-400">
-          <p class="text-lg">Nenhuma sessão encontrada.</p>
-          <p class="text-sm">Crie uma nova sessão na seção "Sessões" para vê-la aqui.</p>
-        </div>
+
+      <div class="md:col-span-2 h-full">
+        <SessionDetailsView
+          v-if="!isEditMode"
+          :selectedSession="sessionsStore.activeSession"
+          :loading="sessionsStore.loading"
+          @startEditing="editSession(sessionsStore.activeSession)"
+          class="h-full"
+        />
+        <SessionForm
+          v-else
+          :session="sessionToEdit"
+          :campaignId="campaignsStore.activeCampaign?.id"
+          @sessionUpdated="handleSessionUpdate"
+          @creationCancelled="cancelCreation"
+          class="h-full"
+        />
       </div>
     </div>
   </section>
+
+  <div v-if="message" :class="{'bg-green-500': messageType === 'success', 'bg-red-500': messageType === 'error'}" class="text-white p-3 rounded-lg mt-4 text-center">
+    {{ message }}
+  </div>
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref, watch, nextTick } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useSessionsStore } from '../stores/sessions';
-import { useAuthStore } from '../stores/auth';
 import { useCampaignsStore } from '../stores/campaigns';
+import EntityListView from '../components/EntityListView.vue';
 import SessionDetailsView from '../components/SessionDetailsView.vue';
+import SessionForm from '../components/SessionForm.vue';
 
 const sessionsStore = useSessionsStore();
-const authStore = useAuthStore();
 const campaignsStore = useCampaignsStore();
 
-const selectedSession = ref(null);
+const { activeCampaign } = storeToRefs(campaignsStore);
 
-const selectedCampaignName = computed(() => {
-  if (selectedSession.value && selectedSession.value.campaign_id) {
-    const campaign = campaignsStore.campaigns.find(c => c.id === selectedSession.value.campaign_id);
-    return campaign ? campaign.name : 'N/A';
+const isEditMode = ref(false);
+const sessionToEdit = ref(null);
+const message = ref('');
+const messageType = ref('');
+
+const selectSession = (session) => {
+  sessionsStore.activeSession = session;
+  isEditMode.value = false;
+};
+
+const addSession = () => {
+  sessionToEdit.value = {}; // Novo objeto para o formulário
+  isEditMode.value = true;
+};
+
+const editSession = (session) => {
+  sessionToEdit.value = { ...session }; // Clona a sessão para edição
+  isEditMode.value = true;
+};
+
+const deleteSession = async (id) => {
+  try {
+    await sessionsStore.deleteSession(id, campaignsStore.activeCampaign.id);
+    message.value = 'Sessão excluída com sucesso!';
+    messageType.value = 'success';
+    setTimeout(() => { message.value = ''; }, 3000);
+  } catch (error) {
+    message.value = `Erro ao excluir sessão: ${error.message}`;
+    messageType.value = 'error';
+    setTimeout(() => { message.value = ''; }, 5000);
   }
-  return '';
+};
+
+const handleSessionUpdate = async () => {
+  isEditMode.value = false;
+  sessionToEdit.value = null;
+  // A store já atualiza a lista e a sessão ativa, então não precisamos de mais nada aqui.
+  message.value = 'Sessão salva com sucesso!';
+  messageType.value = 'success';
+  setTimeout(() => { message.value = ''; }, 3000);
+};
+
+const cancelCreation = () => {
+  isEditMode.value = false;
+  sessionToEdit.value = null;
+  if (!sessionsStore.activeSession && sessionsStore.sessions.length > 0) {
+    sessionsStore.activeSession = sessionsStore.sessions[0];
+  }
+};
+
+const loadInitialData = async (campaign) => {
+  if (!campaign) {
+    sessionsStore.sessions = [];
+    sessionsStore.activeSession = null;
+    return;
+  }
+  await sessionsStore.fetchSessions(campaign.id);
+  await sessionsStore.fetchLatestSessionWithDetails(campaign.id);
+  if (!sessionsStore.activeSession && sessionsStore.sessions.length > 0) {
+    // Se não houver uma sessão "mais recente" (talvez a primeira vez), seleciona a primeira da lista.
+    sessionsStore.activeSession = sessionsStore.sessions[0];
+  }
+  if (sessionsStore.sessions.length === 0) {
+    await nextTick();
+    addSession();
+  }
+};
+
+watch(activeCampaign, (newCampaign) => {
+  loadInitialData(newCampaign);
+}, { immediate: true });
+
+onMounted(() => {
+  if (!campaignsStore.activeCampaign && campaignsStore.campaigns.length > 0) {
+    campaignsStore.setActiveCampaign(campaignsStore.campaigns[0]);
+  }
+  loadInitialData(campaignsStore.activeCampaign);
 });
 
-onMounted(async () => {
-  if (authStore.user) {
-    await campaignsStore.fetchCampaigns(authStore.user.id);
-    // Fetch all sessions for the user, ordered by created_at descending
-    await sessionsStore.fetchSessions(null); // Pass null to fetch all sessions regardless of campaign
-
-    if (sessionsStore.sessions.length > 0) {
-      // Find the most recent session
-      const mostRecentSession = sessionsStore.sessions.reduce((prev, current) => {
-        return (new Date(prev.created_at) > new Date(current.created_at)) ? prev : current;
-      });
-      selectedSession.value = mostRecentSession;
-    }
-  }
-});
 </script>
+
+<style scoped>
+/* Estilos para a scrollbar, se necessário */
+</style>

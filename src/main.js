@@ -89,7 +89,23 @@ import {
   faWandSparkles,
   faPlus,
   faTimes,
-  faSave
+  faSave,
+  faArrowRight,
+  faUserTag,
+  faMask,
+  faCoins,
+  faEnvelope,
+  faLock,
+  faHeading,
+  faAlignLeft,
+  faTag,
+  faUser,
+  faMapPin,
+  faInfoCircle,
+  faIdBadge,
+  faCogs,
+  faGem,
+  faImage
 } from '@fortawesome/free-solid-svg-icons';
 
 /* add icons to the library */
@@ -170,7 +186,23 @@ library.add(
   faWandSparkles,
   faPlus,
   faTimes,
-  faSave
+  faSave,
+  faArrowRight,
+  faUserTag,
+  faMask,
+  faCoins,
+  faEnvelope,
+  faLock,
+  faHeading,
+  faAlignLeft,
+  faTag,
+  faUser,
+  faMapPin,
+  faInfoCircle,
+  faIdBadge,
+  faCogs,
+  faGem,
+  faImage
 );
 
 const pinia = createPinia();

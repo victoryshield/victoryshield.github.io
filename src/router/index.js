@@ -8,7 +8,6 @@ import MestrandoView from '../views/MestrandoView.vue';
 import PersonagensView from '../views/PersonagensView.vue';
 import BestiarioView from '../views/BestiarioView.vue';
 import SessaoAtualView from '../views/SessaoAtualView.vue';
-import SessaoView from '../views/SessaoView.vue';
 import CampanhaView from '../views/CampanhaView.vue';
 import AuthView from '../views/AuthView.vue';
 import { useAuthStore } from '../stores/auth';
@@ -66,17 +65,11 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/sessao-atual',
-    name: 'SessaoAtual',
-    component: SessaoAtualView,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/sessoes',
-    name: 'Sessoes',
-    component: SessaoView,
-    meta: { requiresAuth: true },
-  },
+        path: '/sessoes',
+        name: 'Sessões',
+        component: () => import('../views/SessaoAtualView.vue'),
+        meta: { requiresAuth: true, title: 'Sessão Atual', icon: ['fas', 'scroll'] }
+      },
   {
     path: '/campanha',
     name: 'Campanha',

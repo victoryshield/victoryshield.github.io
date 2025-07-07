@@ -7,120 +7,147 @@
 
     <!-- FORMULÁRIO DE EDIÇÃO/CRIAÇÃO -->
     <div v-else-if="isEditMode">
-      <SessionForm
-        :session="selectedSession"
-        @save="saveSession"
-        @close="cancelForm"
-      />
+      <SessionForm :session="selectedSession" @save="saveSession" @close="cancelForm" />
     </div>
 
     <!-- VISUALIZAÇÃO DE DETALHES DA SESSÃO -->
-    <div v-else-if="selectedSession">
+    <div v-else-if="selectedSession" class="h-full flex flex-col">
       <h3 class="text-2xl font-bold text-amber-700 dark:text-amber-500 mb-2">{{ selectedSession.title }}</h3>
       <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">
         <span v-if="selectedSession.campaign_id">Campanha: {{ selectedCampaignName }} • </span>
         Criada em: {{ formatDate(selectedSession.created_at) }}
       </p>
 
-      <div class="mb-4">
-        <h4 class="font-bold mb-1 flex items-center gap-x-2 dark:text-slate-100"><font-awesome-icon :icon="['fas', 'book-open']" class="text-slate-500" /><span>Descrição</span></h4>
-        <p class="text-slate-600 dark:text-slate-400">{{ selectedSession.description || 'Nenhuma descrição.' }}</p>
-      </div>
-
-      <div class="mb-4">
-        <h4 class="font-bold mb-1 flex items-center gap-x-2 dark:text-slate-100"><font-awesome-icon :icon="['fas', 'bolt']" class="text-slate-500" /><span>Começo Forte</span></h4>
-        <p class="text-slate-600 dark:text-slate-400">{{ selectedSession.comeco_forte || 'Nenhum começo forte definido.' }}</p>
-      </div>
-
-      <div class="mb-4">
-        <h4 class="font-bold mb-1 flex items-center gap-x-2 dark:text-slate-100"><font-awesome-icon :icon="['fas', 'arrow-right']" class="text-slate-500" /><span>Gancho Próxima Aventura</span></h4>
-        <p class="text-slate-600 dark:text-slate-400">{{ selectedSession.gancho_proxima_aventura || 'Nenhum gancho definido.' }}</p>
-      </div>
-
-      <!-- Seções de detalhes relacionados (sub-tabelas) -->
-      <div class="mt-6">
-        <h3 class="text-xl font-bold text-amber-700 dark:text-amber-500 mb-3">Detalhes da Sessão</h3>
-
-        <!-- Ganchos de Personagens -->
-        <div class="mb-4">
-          <h4 class="font-bold mb-2 flex items-center gap-x-2 dark:text-slate-100"><font-awesome-icon :icon="['fas', 'user-tag']" class="text-slate-500" /><span>Ganchos de Personagens</span></h4>
-          <ul v-if="sessionGanchosPersonagens.length">
-            <li v-for="gancho in sessionGanchosPersonagens" :key="gancho.id" class="text-slate-600 dark:text-slate-400 mb-1">
-              <span class="font-semibold">{{ gancho.personagem_name || 'Geral' }}:</span> {{ gancho.description }}
-            </li>
-          </ul>
-          <p v-else class="text-slate-600 dark:text-slate-400">Nenhum gancho de personagem.</p>
+      <div class="grid grid-cols-1 gap-4 flex-grow overflow-y-auto">
+        <!-- Descrição -->
+        <div class="bg-slate-50 dark:bg-slate-700 p-4 rounded-lg shadow">
+          <h4 class="font-bold mb-1 flex items-center gap-x-2 dark:text-slate-100"><font-awesome-icon
+              :icon="['fas', 'book-open']" class="text-slate-500" /><span>Descrição</span></h4>
+          <p class="text-slate-600 dark:text-slate-400">{{ selectedSession.description || 'Nenhuma descrição.' }}</p>
         </div>
 
-        <!-- Locais Interessantes -->
-        <div class="mb-4">
-          <h4 class="font-bold mb-2 flex items-center gap-x-2 dark:text-slate-100"><font-awesome-icon :icon="['fas', 'map-marker-alt']" class="text-slate-500" /><span>Locais Interessantes</span></h4>
-          <ul v-if="sessionLocaisInteressantes.length">
-            <li v-for="local in sessionLocaisInteressantes" :key="local.id" class="text-slate-600 dark:text-slate-400 mb-1">
-              <span class="font-semibold">{{ local.name }}</span>
-              <ul v-if="local.caracteristicas && local.caracteristicas.length" class="ml-4 list-disc list-inside">
-                <li v-for="carac in local.caracteristicas" :key="carac.id">{{ carac.description }}</li>
-              </ul>
-            </li>
-          </ul>
-          <p v-else class="text-slate-600 dark:text-slate-400">Nenhum local interessante.</p>
+        <!-- Começo Forte -->
+        <div class="bg-slate-50 dark:bg-slate-700 p-4 rounded-lg shadow">
+          <h4 class="font-bold mb-1 flex items-center gap-x-2 dark:text-slate-100"><font-awesome-icon
+              :icon="['fas', 'bolt']" class="text-slate-500" /><span>Começo Forte</span></h4>
+          <p class="text-slate-600 dark:text-slate-400">
+            {{ selectedSession.comeco_forte || 'Nenhum começo forte definido' }}
+          </p>
         </div>
 
-        <!-- NPCs Importantes -->
-        <div class="mb-4">
-          <h4 class="font-bold mb-2 flex items-center gap-x-2 dark:text-slate-100"><font-awesome-icon :icon="['fas', 'user-friends']" class="text-slate-500" /><span>NPCs Importantes</span></h4>
-          <ul v-if="sessionNpcsImportantes.length">
-            <li v-for="npc in sessionNpcsImportantes" :key="npc.id" class="text-slate-600 dark:text-slate-400">{{ npc.name }}</li>
-          </ul>
-          <p v-else class="text-slate-600 dark:text-slate-400">Nenhum NPC importante.</p>
+        <!-- Gancho Próxima Aventura -->
+        <div class="bg-slate-50 dark:bg-slate-700 p-4 rounded-lg shadow">
+          <h4 class="font-bold mb-1 flex items-center gap-x-2 dark:text-slate-100"><font-awesome-icon
+              :icon="['fas', 'arrow-right']" class="text-slate-500" /><span>Gancho Próxima Aventura</span></h4>
+          <p class="text-slate-600 dark:text-slate-400">
+            {{ selectedSession.gancho_proxima_aventura || 'Nenhum gancho definido.' }}
+          </p>
         </div>
 
-        <!-- Objetivos -->
-        <div class="mb-4">
-          <h4 class="font-bold mb-2 flex items-center gap-x-2 dark:text-slate-100"><font-awesome-icon :icon="['fas', 'bullseye']" class="text-slate-500" /><span>Objetivos</span></h4>
-          <ul v-if="sessionObjetivos.length">
-            <li v-for="obj in sessionObjetivos" :key="obj.id" class="text-slate-600 dark:text-slate-400">
-              <span class="font-semibold">{{ obj.type }}:</span> {{ obj.description }}
-            </li>
-          </ul>
-          <p v-else class="text-slate-600 dark:text-slate-400">Nenhum objetivo.</p>
-        </div>
+        <!-- Seções de detalhes relacionados (sub-tabelas) -->
+        <div class="grid grid-cols-1 gap-4">
+          <h3 class="text-xl font-bold text-amber-700 dark:text-amber-500 mb-3">Detalhes da Sessão</h3>
 
-        <!-- Segredos e Rumores -->
-        <div class="mb-4">
-          <h4 class="font-bold mb-2 flex items-center gap-x-2 dark:text-slate-100"><font-awesome-icon :icon="['fas', 'mask']" class="text-slate-500" /><span>Segredos e Rumores</span></h4>
-          <ul v-if="sessionSegredosRumores.length">
-            <li v-for="sr in sessionSegredosRumores" :key="sr.id" class="text-slate-600 dark:text-slate-400">{{ sr.description }}</li>
-          </ul>
-          <p v-else class="text-slate-600 dark:text-slate-400">Nenhum segredo ou rumor.</p>
-        </div>
+          <!-- Ganchos de Personagens -->
+          <div class="bg-slate-50 dark:bg-slate-700 p-4 rounded-lg shadow">
+            <h4 class="font-bold mb-2 flex items-center gap-x-2 dark:text-slate-100"><font-awesome-icon
+                :icon="['fas', 'user-tag']" class="text-slate-500" /><span>Ganchos de Personagens</span></h4>
+            <ul v-if="sessionGanchosPersonagens.length">
+              <li v-for="gancho in sessionGanchosPersonagens" :key="gancho.id"
+                class="text-slate-600 dark:text-slate-400 mb-1">
+                <span class="font-semibold">{{ gancho.personagem_name || 'Geral' }}:</span> {{ gancho.description }}
+              </li>
+            </ul>
+            <p v-else class="text-slate-600 dark:text-slate-400">Nenhum gancho de personagem.</p>
+          </div>
 
-        <!-- Tesouros e Recompensas -->
-        <div class="mb-4">
-          <h4 class="font-bold mb-2 flex items-center gap-x-2 dark:text-slate-100"><font-awesome-icon :icon="['fas', 'coins']" class="text-slate-500" /><span>Tesouros e Recompensas</span></h4>
-          <ul v-if="sessionTesourosRecompensas.length">
-            <li v-for="tr in sessionTesourosRecompensas" :key="tr.id" class="text-slate-600 dark:text-slate-400">
-              <span class="font-semibold">{{ tr.name }}:</span> {{ tr.description_mecanica || 'Sem descrição mecânica.' }}
-            </li>
-          </ul>
-          <p v-else class="text-slate-600 dark:text-slate-400">Nenhum tesouro ou recompensa.</p>
-        </div>
+          <!-- Locais Interessantes -->
+          <div class="bg-slate-50 dark:bg-slate-700 p-4 rounded-lg shadow">
+            <h4 class="font-bold mb-2 flex items-center gap-x-2 dark:text-slate-100"><font-awesome-icon
+                :icon="['fas', 'map-marker-alt']" class="text-slate-500" /><span>Locais Interessantes</span></h4>
+            <ul v-if="sessionLocaisInteressantes.length">
+              <li v-for="local in sessionLocaisInteressantes" :key="local.id"
+                class="text-slate-600 dark:text-slate-400 mb-1">
+                <span class="font-semibold">{{ local.name }}</span>
+                <ul v-if="local.caracteristicas && local.caracteristicas.length" class="ml-4 list-disc list-inside">
+                  <li v-for="carac in local.caracteristicas" :key="carac.id">{{ carac.description }}</li>
+                </ul>
+              </li>
+            </ul>
+            <p v-else class="text-slate-600 dark:text-slate-400">Nenhum local interessante.</p>
+          </div>
 
-        <!-- Encontros e Desafios -->
-        <div class="mb-4">
-          <h4 class="font-bold mb-2 flex items-center gap-x-2 dark:text-slate-100"><font-awesome-icon :icon="['fas', 'dragon']" class="text-slate-500" /><span>Encontros e Desafios</span></h4>
-          <ul v-if="sessionEncontrosDesafios.length">
-            <li v-for="ed in sessionEncontrosDesafios" :key="ed.id" class="text-slate-600 dark:text-slate-400">
-              <span class="font-semibold">{{ ed.title }}:</span> {{ ed.description || 'Sem descrição.' }} (Mecânica: {{ ed.mecanica || 'N/A' }})
-            </li>
-          </ul>
-          <p v-else class="text-slate-600 dark:text-slate-400">Nenhum encontro ou desafio.</p>
-        </div>
+          <!-- NPCs Importantes -->
+          <div class="bg-slate-50 dark:bg-slate-700 p-4 rounded-lg shadow">
+            <h4 class="font-bold mb-2 flex items-center gap-x-2 dark:text-slate-100"><font-awesome-icon
+                :icon="['fas', 'user-friends']" class="text-slate-500" /><span>NPCs Importantes</span></h4>
+            <ul v-if="sessionNpcsImportantes.length">
+              <li v-for="npc in sessionNpcsImportantes" :key="npc.id" class="text-slate-600 dark:text-slate-400">{{
+                npc.name }}</li>
+            </ul>
+            <p v-else class="text-slate-600 dark:text-slate-400">Nenhum NPC importante.</p>
+          </div>
 
+          <!-- Objetivos -->
+          <div class="bg-slate-50 dark:bg-slate-700 p-4 rounded-lg shadow">
+            <h4 class="font-bold mb-2 flex items-center gap-x-2 dark:text-slate-100"><font-awesome-icon
+                :icon="['fas', 'bullseye']" class="text-slate-500" /><span>Objetivos</span></h4>
+            <ul v-if="sessionObjetivos.length">
+              <li v-for="obj in sessionObjetivos" :key="obj.id" class="text-slate-600 dark:text-slate-400">
+                <span class="font-semibold">{{ obj.type }}:</span> {{ obj.description }}
+              </li>
+            </ul>
+            <p v-else class="text-slate-600 dark:text-slate-400">Nenhum objetivo.</p>
+          </div>
+
+          <!-- Segredos e Rumores -->
+          <div class="bg-slate-50 dark:bg-slate-700 p-4 rounded-lg shadow">
+            <h4 class="font-bold mb-2 flex items-center gap-x-2 dark:text-slate-100"><font-awesome-icon
+                :icon="['fas', 'mask']" class="text-slate-500" /><span>Segredos e Rumores</span></h4>
+            <ul v-if="sessionSegredosRumores.length">
+              <li v-for="sr in sessionSegredosRumores" :key="sr.id" class="text-slate-600 dark:text-slate-400">{{
+                sr.description }}</li>
+            </ul>
+            <p v-else class="text-slate-600 dark:text-slate-400">Nenhum segredo ou rumor.</p>
+          </div>
+
+          <!-- Tesouros e Recompensas -->
+          <div class="bg-slate-50 dark:bg-slate-700 p-4 rounded-lg shadow">
+            <h4 class="font-bold mb-2 flex items-center gap-x-2 dark:text-slate-100"><font-awesome-icon
+                :icon="['fas', 'coins']" class="text-slate-500" /><span>Tesouros e Recompensas</span></h4>
+            <ul v-if="sessionTesourosRecompensas.length">
+              <li v-for="tr in sessionTesourosRecompensas" :key="tr.id" class="text-slate-600 dark:text-slate-400">
+                <span class="font-semibold">{{ tr.name }}:</span>
+                {{ tr.description_mecanica || 'Sem descrição mecânica.' }}
+              </li>
+            </ul>
+            <p v-else class="text-slate-600 dark:text-slate-400">Nenhum tesouro ou recompensa.</p>
+          </div>
+
+          <!-- Encontros e Desafios -->
+          <div class="bg-slate-50 dark:bg-slate-700 p-4 rounded-lg shadow">
+            <h4 class="font-bold mb-2 flex items-center gap-x-2 dark:text-slate-100"><font-awesome-icon
+                :icon="['fas', 'dragon']" class="text-slate-500" /><span>Encontros e Desafios</span></h4>
+            <ul v-if="sessionEncontrosDesafios.length">
+              <li v-for="ed in sessionEncontrosDesafios" :key="ed.id" class="text-slate-600 dark:text-slate-400">
+                <span class="font-semibold">{{ ed.title }}:</span> {{ ed.description || 'Sem descrição.' }} (Mecânica:
+                {{ ed.mecanica || 'N/A' }})
+              </li>
+            </ul>
+            <p v-else class="text-slate-600 dark:text-slate-400">Nenhum encontro ou desafio.</p>
+          </div>
+
+          <!-- Gancho para Próxima Aventura -->
+          <div class="bg-slate-50 dark:bg-slate-700 p-4 rounded-lg shadow">
+            <h4 class="font-bold mb-2 flex items-center gap-x-2 dark:text-slate-100"><font-awesome-icon
+                :icon="['fas', 'arrow-right']" class="text-slate-500" /><span>Gancho para Próxima Aventura</span></h4>
+            <p class="text-slate-600 dark:text-slate-400">
+              {{ selectedSession.gancho_proxima_aventura || 'Nenhum gancho definido.' }}
+            </p>
+          </div>
+        </div>
       </div>
     </div>
-
-    
   </div>
 </template>
 

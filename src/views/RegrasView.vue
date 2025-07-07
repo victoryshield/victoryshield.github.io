@@ -1,28 +1,180 @@
 <template>
-  <section id="regras">
-    <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-lg shadow">
+  <div class="container relative mx-auto p-4 sm:p-6 md:p-8">
+    <div class="p-4 rounded-lg shadow bg-white dark:bg-slate-800">
+      <h2 class="text-2xl font-bold mb-4 text-amber-700 dark:text-amber-500 flex items-center gap-x-2">
+        <font-awesome-icon :icon="['fas', 'book']" /><span>Regras do Jogo</span>
+      </h2>
 
-      <div class="relative mb-6">
-        <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-          <font-awesome-icon :icon="['fas', 'search']" class="text-slate-400" />
-        </span>
-        <input type="search" id="regras-search-input" placeholder="Buscar por nome em todas as categorias..."
-          class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 dark:bg-slate-700 dark:border-slate-600 dark:placeholder-slate-400">
+      <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <ul class="flex flex-wrap -mb-px text-sm font-medium text-center gap-2" id="default-tab"
+          data-tabs-toggle="#default-tab-content" role="tablist">
+          <li class="me-2" role="presentation">
+            <button
+              class="inline-block p-4 rounded-md shadow-sm transition-all duration-300 ease-in-out flex items-center justify-center gap-x-2"
+              :class="{ 'bg-amber-500 text-white font-semibold dark:text-white': activeTab === 'pericias', 'bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:bg-amber-500 hover:text-white dark:hover:text-slate-800': activeTab !== 'pericias' }"
+              @click="activeTab = 'pericias'" type="button" role="tab" aria-controls="pericias" aria-selected="true">
+              <font-awesome-icon :icon="['fas', 'graduation-cap']"
+                :class="activeTab === 'pericias' ? 'text-white' : 'text-blue-600'" />
+              <span class="font-semibold">&nbsp;Perícias</span>
+            </button>
+          </li>
+          <li class="me-2" role="presentation">
+            <button
+              class="inline-block p-4 rounded-md shadow-sm transition-all duration-300 ease-in-out flex items-center justify-center gap-x-2"
+              :class="{ 'bg-amber-500 text-white font-semibold dark:text-white': activeTab === 'vantagens', 'bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:bg-amber-500 hover:text-white dark:hover:text-slate-800': activeTab !== 'vantagens' }"
+              @click="activeTab = 'vantagens'" type="button" role="tab" aria-controls="vantagens" aria-selected="false">
+              <font-awesome-icon :icon="['fas', 'thumbs-up']"
+                :class="activeTab === 'vantagens' ? 'text-white' : 'text-green-600'" />
+              <span class="font-semibold">&nbsp;Vantagens</span>
+            </button>
+          </li>
+          <li class="me-2" role="presentation">
+            <button
+              class="inline-block p-4 rounded-md shadow-sm transition-all duration-300 ease-in-out flex items-center justify-center gap-x-2"
+              :class="{ 'bg-amber-500 text-white font-semibold dark:text-white': activeTab === 'desvantagens', 'bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:bg-amber-500 hover:text-white dark:hover:text-slate-800': activeTab !== 'desvantagens' }"
+              @click="activeTab = 'desvantagens'" type="button" role="tab" aria-controls="desvantagens"
+              aria-selected="false">
+              <font-awesome-icon :icon="['fas', 'thumbs-down']"
+                :class="activeTab === 'desvantagens' ? 'text-white' : 'text-red-600'" />
+              <span class="font-semibold">&nbsp;Desvantagens</span>
+            </button>
+          </li>
+          <li role="presentation">
+            <button
+              class="inline-block p-4 rounded-md shadow-sm transition-all duration-300 ease-in-out flex items-center justify-center gap-x-2"
+              :class="{ 'bg-amber-500 text-white font-semibold dark:text-white': activeTab === 'tecnicas', 'bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:bg-amber-500 hover:text-white dark:hover:text-slate-800': activeTab !== 'tecnicas' }"
+              @click="activeTab = 'tecnicas'" type="button" role="tab" aria-controls="tecnicas" aria-selected="false">
+              <font-awesome-icon :icon="['fas', 'hat-wizard']"
+                :class="activeTab === 'tecnicas' ? 'text-white' : 'text-purple-600'" />
+              <span class="font-semibold">&nbsp;Técnicas</span>
+            </button>
+          </li>
+        </ul>
+        <div class="relative w-full sm:w-auto">
+          <input type="text" v-model="searchTerm" placeholder="Buscar regras..."
+            class="w-full sm:w-64 p-2 pl-10 rounded-md shadow-sm bg-white dark:bg-slate-700 text-gray-900 dark:text-white border border-gray-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500">
+          <font-awesome-icon :icon="['fas', 'search']"
+            class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <button v-if="searchTerm" @click="clearSearch"
+            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+            <font-awesome-icon :icon="['fas', 'times-circle']" />
+          </button>
+        </div>
       </div>
 
-      <div id="regras-nav" class="flex flex-wrap justify-center gap-2 mb-6 border-b-2 border-amber-500 pb-4">
+      <div id="default-tab-content">
+        <div class="p-4 rounded-lg bg-gray-50 dark:bg-slate-700">
+          <div v-if="periciasLoading || vantagensLoading || desvantagensLoading || tecnicasLoading"
+            class="text-center text-slate-500 dark:text-slate-400">Carregando...</div>
+          <div v-else-if="periciasError || vantagensError || desvantagensError || tecnicasError"
+            class="text-center text-red-500">Erro ao carregar os dados.</div>
+          <div v-else-if="filteredItems.length === 0" class="text-center text-slate-500 dark:text-slate-400">Nenhum
+            resultado encontrado.</div>
+          <div v-else class="space-y-4">
+            <div v-for="item in filteredItems" :key="item.id + item.type"
+              class="p-3 rounded-md bg-white dark:bg-slate-800 shadow-sm">
+              <h4 class="font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-x-2">
+                <font-awesome-icon :icon="getIcon(item.type)" />
+                <span>{{ item.name }}</span>
+              </h4>
+              <p class="text-slate-700 dark:text-slate-300 text-sm" v-html="formatDescription(item.description)"></p>
+              <p v-if="item.requirements" class="text-slate-600 dark:text-slate-400 text-xs mt-1">Requisitos: {{
+                item.requirements }}</p>
+              <p v-if="item.duration" class="text-slate-600 dark:text-slate-400 text-xs mt-1">Duração: {{ item.duration
+                }}</p>
+            </div>
+          </div>
+        </div>
       </div>
-
-      <div id="regras-content">
-      </div>
-
-      <div id="regras-search-results" class="hidden">
-      </div>
-
     </div>
-  </section>
+  </div>
 </template>
 
 <script setup>
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { ref, onMounted, computed } from 'vue';
+import { storeToRefs } from 'pinia';
+import { usePericiasStore } from '../stores/pericias';
+import { useVantagensStore } from '../stores/vantagens';
+import { useDesvantagensStore } from '../stores/desvantagens';
+import { useTecnicasStore } from '../stores/tecnicas';
+
+const activeTab = ref('pericias');
+const searchTerm = ref('');
+
+const clearSearch = () => {
+  searchTerm.value = '';
+};
+
+const periciasStore = usePericiasStore();
+const { pericias, loading: periciasLoading, error: periciasError } = storeToRefs(periciasStore);
+
+const vantagensStore = useVantagensStore();
+const { vantagens, loading: vantagensLoading, error: vantagensError } = storeToRefs(vantagensStore);
+
+const desvantagensStore = useDesvantagensStore();
+const { desvantagens, loading: desvantagensLoading, error: desvantagensError } = storeToRefs(desvantagensStore);
+
+const tecnicasStore = useTecnicasStore();
+const { tecnicas, loading: tecnicasLoading, error: tecnicasError } = storeToRefs(tecnicasStore);
+
+const getIcon = (type) => {
+  switch (type) {
+    case 'Perícia':
+      return ['fas', 'graduation-cap'];
+    case 'Vantagem':
+      return ['fas', 'thumbs-up'];
+    case 'Desvantagem':
+      return ['fas', 'thumbs-down'];
+    case 'Técnica':
+      return ['fas', 'hat-wizard'];
+    default:
+      return ['fas', 'question-circle'];
+  }
+};
+
+const filteredItems = computed(() => {
+  const lowerCaseSearchTerm = searchTerm.value.toLowerCase();
+  if (lowerCaseSearchTerm.length < 3) {
+    switch (activeTab.value) {
+      case 'pericias':
+        return pericias.value.map(item => ({ ...item, type: 'Perícia' }));
+      case 'vantagens':
+        return vantagens.value.map(item => ({ ...item, type: 'Vantagem' }));
+      case 'desvantagens':
+        return desvantagens.value.map(item => ({ ...item, type: 'Desvantagem' }));
+      case 'tecnicas':
+        return tecnicas.value.map(item => ({ ...item, type: 'Técnica' }));
+      default:
+        return [];
+    }
+  } else {
+    const allItems = [
+      ...pericias.value.map(item => ({ ...item, type: 'Perícia' })),
+      ...vantagens.value.map(item => ({ ...item, type: 'Vantagem' })),
+      ...desvantagens.value.map(item => ({ ...item, type: 'Desvantagem' })),
+      ...tecnicas.value.map(item => ({ ...item, type: 'Técnica' }))
+    ];
+    return allItems.filter(item =>
+      item.name.toLowerCase().includes(lowerCaseSearchTerm)
+    );
+  }
+});
+
+
+
+const formatDescription = (description) => {
+  if (!description) return '';
+  return description.replace(/•/g, '<br>•');
+};
+
+onMounted(async () => {
+  await periciasStore.fetchPericias();
+  await vantagensStore.fetchVantagens();
+  await desvantagensStore.fetchDesvantagens();
+  await tecnicasStore.fetchTecnicas();
+});
 </script>
+
+<style scoped>
+/* Adicione estilos específicos para este componente aqui, se necessário */
+</style>

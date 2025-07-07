@@ -58,6 +58,38 @@ export type Database = {
         }
         Relationships: []
       }
+      campaign_chapters: {
+        Row: {
+          id: number
+          campaign_id: number
+          chapter_number: number
+          created_at: string
+          content: string | null
+        }
+        Insert: {
+          id?: number
+          campaign_id: number
+          chapter_number: number
+          created_at?: string
+          content?: string | null
+        }
+        Update: {
+          id?: number
+          campaign_id?: number
+          chapter_number?: number
+          created_at?: string
+          content?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_chapters_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       desvantagens: {
         Row: {
           cost: string | null

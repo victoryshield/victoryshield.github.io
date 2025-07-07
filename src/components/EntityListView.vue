@@ -1,5 +1,5 @@
 <template>
-  <div class="md:col-span-1 p-4 rounded-lg shadow bg-white dark:bg-slate-800 max-h-[600px] overflow-y-auto relative">
+  <div class="md:col-span-1 p-4 rounded-lg shadow bg-white dark:bg-slate-800 relative h-full flex flex-col">
     <h2 class="text-xl font-bold mb-4 text-amber-700 dark:text-amber-500 flex items-center justify-between">
       <div class="flex items-center gap-x-2">
         <font-awesome-icon :icon="entityIcon" />
@@ -17,27 +17,30 @@
     </div>
     <div v-if="loading" class="text-center text-slate-500 dark:text-slate-400">Carregando {{ entityTitle }}...</div>
     <div v-else-if="error" class="text-center text-red-500">Erro ao carregar {{ entityTitle }}: {{ error.message }}</div>
-    <ul v-else class="space-y-1">
-      <li v-for="entity in entities" :key="entity.id"
-        class="p-3 rounded-md cursor-pointer transition-colors duration-200"
-        :class="{'bg-amber-100 dark:bg-amber-800 ring-2 ring-amber-500': selectedEntity && selectedEntity.id === entity.id, 'hover:bg-amber-100 dark:hover:bg-slate-700': selectedEntity && selectedEntity.id !== entity.id}"
-        @click="$emit('selectEntity', entity)">
-        <div class="flex justify-between items-center">
-          <p class="font-semibold" :class="{'text-amber-800 dark:text-amber-100': selectedEntity && selectedEntity.id === entity.id, 'dark:text-slate-100': selectedEntity && selectedEntity.id !== entity.id}">{{ entity.name }}</p>
-          <div class="flex gap-x-2">
-            <button @click.stop="$emit('editEntity', entity)" class="text-slate-500 hover:text-amber-600 dark:text-slate-400 dark:hover:text-amber-400 transition-colors duration-200">
-              <font-awesome-icon :icon="['fas', 'pen-to-square']" />
-            </button>
-            <button @click.stop="openConfirmationModal(entity.id)" class="text-red-500 hover:text-red-700 transition-colors duration-200">
-              <font-awesome-icon :icon="['fas', 'trash']" />
-            </button>
+    <div v-else class="space-y-1 flex-grow overflow-y-auto pb-4">
+      <ul class="space-y-1">
+        <li v-for="entity in entities" :key="entity.id"
+          class="p-3 rounded-md cursor-pointer transition-colors duration-200"
+          :class="{'bg-amber-500 text-white font-semibold dark:text-white': selectedEntity && selectedEntity.id === entity.id, 'hover:bg-amber-100 dark:hover:bg-slate-700': selectedEntity && selectedEntity.id !== entity.id}"
+          @click="$emit('selectEntity', entity)">
+          <div class="flex justify-between items-center">
+            <p class="font-semibold" :class="{'text-white': selectedEntity && selectedEntity.id === entity.id, 'dark:text-slate-100': selectedEntity && selectedEntity.id !== entity.id}">{{ entity.title || entity.name }}</p>
+            <div class="flex gap-x-2">
+              <button @click.stop="$emit('editEntity', entity)" :class="{'text-white': selectedEntity && selectedEntity.id === entity.id, 'text-slate-500 hover:text-amber-600 dark:text-slate-400 dark:hover:text-amber-400': selectedEntity && selectedEntity.id !== entity.id}" class="transition-colors duration-200">
+                <font-awesome-icon :icon="['fas', 'pen-to-square']" />
+              </button>
+              <button @click.stop="openConfirmationModal(entity.id)" :class="{'text-white': selectedEntity && selectedEntity.id === entity.id, 'text-red-500 hover:text-red-700': selectedEntity && selectedEntity.id !== entity.id}" class="transition-colors duration-200">
+                <font-awesome-icon :icon="['fas', 'trash']" />
+              </button>
+            </div>
           </div>
-        </div>
-      </li>
-    </ul>
-    <button @click="$emit('addEntity')" class="absolute bottom-4 right-4 bg-amber-500 hover:bg-amber-600 text-white p-4 rounded-full shadow-lg">
-      <font-awesome-icon :icon="['fas', 'plus']" class="fa-2x" />
-    </button>
+        </li>
+      </ul>
+      <button @click="$emit('addEntity')" class="w-full flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm transition-all duration-300 ease-in-out bg-amber-500 text-white font-semibold dark:text-white mt-4">
+        <font-awesome-icon :icon="['fas', 'plus']" />
+        <span>Adicionar Novo</span>
+      </button>
+    </div>
 
     <ConfirmationModal
       v-if="showConfirmationModal"

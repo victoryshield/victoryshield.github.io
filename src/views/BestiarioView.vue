@@ -16,24 +16,36 @@
         @addEntity="addMonstro"
         @deleteEntity="deleteMonstro"
         @editEntity="editMonstro"
-    />
+      />
 
-    <EntityDetailsView
-      :selectedEntity="selectedMonstro"
-      :selectedCampaignName="selectedCampaignName"
-      entity-type="monstro"
-      :is-edit-mode="isEditMode"
-      :loading="monstrosStore.loading"
-      @entityUpdated="handleEntityUpdate"
-      @creationCancelled="cancelCreation"
-      @startEditing="startEditingFromDetails"
-    />
+      <EntityForm
+        v-if="isEditMode"
+        :entity="selectedMonstro"
+        entityType="monstro"
+        :campaignId="selectedCampaignId"
+        :isEditMode="isEditMode"
+        @save="handleSave"
+        @close="handleClose"
+        class="md:col-span-2"
+      />
+
+      <EntityDetailsView
+        v-else-if="selectedMonstro"
+        :selectedEntity="selectedMonstro"
+        :selectedCampaignName="selectedCampaignName"
+        entity-type="monstro"
+        :loading="monstrosStore.loading"
+      />
+
+      <div v-else class="md:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-lg shadow-lg flex items-center justify-center">
+        <p class="text-slate-600 dark:text-slate-400 text-lg">Selecione um monstro ou adicione um novo.</p>
+      </div>
+    </div>
+  </section>
+
+  <div v-if="message" :class="{'bg-green-500': messageType === 'success', 'bg-red-500': messageType === 'error'}" class="text-white p-3 rounded-lg mt-4 text-center">
+    {{ message }}
   </div>
-</section>
-
-<div v-if="message" :class="{'bg-green-500': messageType === 'success', 'bg-red-500': messageType === 'error'}" class="text-white p-3 rounded-lg mt-4 text-center">
-  {{ message }}
-</div>
 </template>
 
 <script setup>
@@ -42,6 +54,7 @@ import { useMonstrosStore } from '../stores/monstros';
 import { useAuthStore } from '../stores/auth';
 import { useCampaignsStore } from '../stores/campaigns';
 import EntityListView from '../components/EntityListView.vue';
+import EntityForm from '../components/EntityForm.vue';
 import EntityDetailsView from '../components/EntityDetailsView.vue';
 
 const monstrosStore = useMonstrosStore();
@@ -97,15 +110,37 @@ const editMonstro = (monstro) => {
   isEditMode.value = true;
 };
 
-const cancelCreation = () => {
+const handleSave = async (entityData) => {
+  try {
+    if (entityData.id) {
+      await monstrosStore.updateMonstro(entityData);
+      message.value = 'Monstro atualizado com sucesso!';
+    } else {
+      await monstrosStore.addMonstro(entityData);
+      message.value = 'Monstro adicionado com sucesso!';
+    }
+    messageType.value = 'success';
+    isEditMode.value = false;
+    await monstrosStore.fetchMonstros(selectedCampaignId.value);
+    if (filteredMonstros.value.length > 0) {
+      const updatedOrNewMonstro = monstrosStore.monstros.find(m => m.id === entityData.id) || filteredMonstros.value[filteredMonstros.value.length - 1];
+      selectMonstro(updatedOrNewMonstro);
+    } else {
+      selectedMonstro.value = null;
+    }
+  } catch (error) {
+    message.value = `Erro ao salvar monstro: ${error.message}`;
+    messageType.value = 'error';
+  } finally {
+    setTimeout(() => { message.value = ''; messageType.value = ''; }, 3000);
+  }
+};
+
+const handleClose = () => {
   isEditMode.value = false;
   if (!selectedMonstro.value && filteredMonstros.value.length > 0) {
     selectMonstro(filteredMonstros.value[0]);
   }
-};
-
-const startEditingFromDetails = () => {
-  isEditMode.value = true;
 };
 
 const deleteMonstro = async (id) => {
@@ -124,17 +159,6 @@ const deleteMonstro = async (id) => {
     message.value = `Erro ao excluir monstro: ${error.message}`;
     messageType.value = 'error';
     setTimeout(() => { message.value = ''; messageType.value = ''; }, 5000);
-  }
-};
-
-const handleEntityUpdate = async () => {
-  isEditMode.value = false;
-  await monstrosStore.fetchMonstros(selectedCampaignId.value);
-  if (filteredMonstros.value.length > 0) {
-    const updatedOrNewMonstro = monstrosStore.monstros.find(m => m.id === selectedMonstro.value?.id) || filteredMonstros.value[filteredMonstros.value.length - 1];
-    selectMonstro(updatedOrNewMonstro);
-  } else {
-    selectedMonstro.value = null;
   }
 };
 

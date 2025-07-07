@@ -15,7 +15,13 @@ export const usePersonagensStore = defineStore('personagens', {
       try {
         let query = supabase
           .from('personagens')
-          .select('id, name, archetype, concept, Poder, Habilidade, Resistencia, Pontos_Acao, Pontos_Mana, Pontos_Vida, image, campaign_id');
+          .select(
+            `id, name, archetype, concept, pontos, Habilidade, Poder, Resistencia, Pontos_Acao, Pontos_Mana, Pontos_Vida, image, campaign_id,
+            personagens_pericias(pericia_id, pericias(id, name)),
+            personagens_vantagens(vantagem_id, vantagens(id, name)),
+            personagens_desvantagens(desvantagem_id, desvantagens(id, name)),
+            personagens_tecnicas(tecnica_id, tecnicas(id, name))`
+          );
 
         if (campaignId) {
           query = query.eq('campaign_id', campaignId);
@@ -38,13 +44,56 @@ export const usePersonagensStore = defineStore('personagens', {
         if (!authStore.user) {
           throw new Error('User not authenticated.');
         }
-        const { id, ...rest } = personagemData;
-        const { data, error } = await supabase
+        const { id, pericias, vantagens, desvantagens, tecnicas, ...rest } = personagemData;
+        const { data: newPersonagem, error: personagemError } = await supabase
           .from('personagens')
           .insert([rest])
           .select();
-        if (error) throw error;
-        this.personagens.push(data[0]);
+        if (personagemError) throw personagemError;
+
+        const personagemId = newPersonagem[0].id;
+
+        // Insert related data
+        if (pericias && pericias.length > 0) {
+          const { error: periciasError } = await supabase
+            .from('personagens_pericias')
+            .insert(pericias.map(p => ({ personagem_id: personagemId, pericia_id: p.pericia_id })));
+          if (periciasError) throw periciasError;
+        }
+        if (vantagens && vantagens.length > 0) {
+          const { error: vantagensError } = await supabase
+            .from('personagens_vantagens')
+            .insert(vantagens.map(v => ({ personagem_id: personagemId, vantagem_id: v.vantagem_id })));
+          if (vantagensError) throw vantagensError;
+        }
+        if (desvantagens && desvantagens.length > 0) {
+          const { error: desvantagensError } = await supabase
+            .from('personagens_desvantagens')
+            .insert(desvantagens.map(d => ({ personagem_id: personagemId, desvantagem_id: d.desvantagem_id })));
+          if (desvantagensError) throw desvantagensError;
+        }
+        if (tecnicas && tecnicas.length > 0) {
+          const { error: tecnicasError } = await supabase
+            .from('personagens_tecnicas')
+            .insert(tecnicas.map(t => ({ personagem_id: personagemId, tecnica_id: t.tecnica_id })));
+          if (tecnicasError) throw tecnicasError;
+        }
+
+        // Re-fetch the newly added personagem with all its relations
+        const { data: fetchedPersonagem, error: fetchError } = await supabase
+          .from('personagens')
+          .select(
+            `id, name, archetype, concept, pontos, Habilidade, Poder, Resistencia, Pontos_Acao, Pontos_Mana, Pontos_Vida, image, campaign_id,
+            personagens_pericias(pericia_id, pericias(id, name)),
+            personagens_vantagens(vantagem_id, vantagens(id, name)),
+            personagens_desvantagens(desvantagem_id, desvantagens(id, name)),
+            personagens_tecnicas(tecnica_id, tecnicas(id, name))`
+          )
+          .eq('id', personagemId)
+          .single();
+        if (fetchError) throw fetchError;
+
+        this.personagens.push(fetchedPersonagem);
       } catch (error) {
         this.error = error;
         console.error('Error adding personagem:', error);
@@ -59,15 +108,68 @@ export const usePersonagensStore = defineStore('personagens', {
         if (!authStore.user) {
           throw new Error('User not authenticated.');
         }
-        const { data, error } = await supabase
+        const { id, pericias, vantagens, desvantagens, tecnicas, ...rest } = personagemData;
+
+        const { error: updateError } = await supabase
           .from('personagens')
-          .update(personagemData)
-          .eq('id', personagemData.id)
-          .select();
-        if (error) throw error;
-        const index = this.personagens.findIndex(p => p.id === personagemData.id);
+          .update(rest)
+          .eq('id', id);
+        if (updateError) throw updateError;
+
+        // Update related data
+        // Pericias
+        await supabase.from('personagens_pericias').delete().eq('personagem_id', id);
+        if (pericias && pericias.length > 0) {
+          const { error: periciasError } = await supabase
+            .from('personagens_pericias')
+            .insert(pericias.map(p => ({ personagem_id: id, pericia_id: p.pericia_id })));
+          if (periciasError) throw periciasError;
+        }
+
+        // Vantagens
+        await supabase.from('personagens_vantagens').delete().eq('personagem_id', id);
+        if (vantagens && vantagens.length > 0) {
+          const { error: vantagensError } = await supabase
+            .from('personagens_vantagens')
+            .insert(vantagens.map(v => ({ personagem_id: id, vantagem_id: v.vantagem_id })));
+          if (vantagensError) throw vantagensError;
+        }
+
+        // Desvantagens
+        await supabase.from('personagens_desvantagens').delete().eq('personagem_id', id);
+        if (desvantagens && desvantagens.length > 0) {
+          const { error: desvantagensError } = await supabase
+            .from('personagens_desvantagens')
+            .insert(desvantagens.map(d => ({ personagem_id: id, desvantagem_id: d.desvantagem_id })));
+          if (desvantagensError) throw desvantagensError;
+        }
+
+        // Tecnicas
+        await supabase.from('personagens_tecnicas').delete().eq('personagem_id', id);
+        if (tecnicas && tecnicas.length > 0) {
+          const { error: tecnicasError } = await supabase
+            .from('personagens_tecnicas')
+            .insert(tecnicas.map(t => ({ personagem_id: id, tecnica_id: t.tecnica_id })));
+          if (tecnicasError) throw tecnicasError;
+        }
+
+        // Re-fetch the updated personagem with all its relations
+        const { data: fetchedPersonagem, error: fetchError } = await supabase
+          .from('personagens')
+          .select(
+            `id, name, archetype, concept, pontos, Habilidade, Poder, Resistencia, Pontos_Acao, Pontos_Mana, Pontos_Vida, image, campaign_id,
+            personagens_pericias(pericia_id, pericias(id, name)),
+            personagens_vantagens(vantagem_id, vantagens(id, name)),
+            personagens_desvantagens(desvantagem_id, desvantagens(id, name)),
+            personagens_tecnicas(tecnica_id, tecnicas(id, name))`
+          )
+          .eq('id', id)
+          .single();
+        if (fetchError) throw fetchError;
+
+        const index = this.personagens.findIndex(p => p.id === id);
         if (index !== -1) {
-          this.personagens[index] = data[0];
+          this.personagens[index] = fetchedPersonagem;
         }
       } catch (error) {
         this.error = error;

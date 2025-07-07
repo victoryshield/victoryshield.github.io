@@ -1,71 +1,282 @@
 <template>
-  <div class="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-    <h2 class="text-2xl font-bold mb-4 text-amber-500">{{ form.id ? `Editar ${entityName}` : `Novo ${entityName}` }}</h2>
-    <form @submit.prevent="handleSubmit">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div>
-          <label for="name" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Nome:</label>
-          <input type="text" id="name" v-model="form.name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-900 dark:text-white leading-tight focus:outline-none focus:shadow-outline bg-white dark:bg-slate-700 border-gray-300 dark:border-gray-600" required>
-          <p v-if="validationErrors.name" class="text-red-500 text-xs italic mt-1">{{ validationErrors.name }}</p>
+  <div class="p-4 bg-white dark:bg-slate-800 rounded-lg shadow-md h-full flex flex-col">
+    <h2 class="text-2xl font-bold text-amber-700 dark:text-amber-500 mb-4">{{ isEditMode ? 'Editar' : 'Adicionar' }} {{ entityTypeName }}</h2>
+    <form @submit.prevent="submitForm" class="flex flex-col flex-grow overflow-y-auto">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="mb-4 relative">
+          <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nome:</label>
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
+            <font-awesome-icon :icon="['fas', 'heading']" class="text-gray-400" />
+          </div>
+          <input
+            type="text"
+            id="name"
+            v-model="formData.name"
+            class="block h-10 w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white pl-10"
+            required
+          />
         </div>
-        <div>
-          <label for="archetype" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Arquétipo:</label>
-          <input type="text" id="archetype" v-model="form.archetype" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-900 dark:text-white leading-tight focus:outline-none focus:shadow-outline bg-white dark:bg-slate-700 border-gray-300 dark:border-gray-600">
+        <div class="mb-4 relative">
+          <label for="concept" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Conceito:</label>
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
+            <font-awesome-icon :icon="['fas', 'lightbulb']" class="text-gray-400" />
+          </div>
+          <input
+            type="text"
+            id="concept"
+            v-model="formData.concept"
+            class="block h-10 w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white pl-10"
+          />
         </div>
-        <div class="md:col-span-2">
-          <label for="concept" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Conceito:</label>
-          <textarea id="concept" v-model="form.concept" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-900 dark:text-white leading-tight focus:outline-none focus:shadow-outline bg-white dark:bg-slate-700 border-gray-300 dark:border-gray-600" rows="3"></textarea>
+        <div class="mb-4 relative">
+          <label for="archetype" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Arquétipo:</label>
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
+            <font-awesome-icon :icon="['fas', 'mask']" class="text-gray-400" />
+          </div>
+          <input
+            type="text"
+            id="archetype"
+            v-model="formData.archetype"
+            class="block h-10 w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white pl-10"
+          />
         </div>
-        <div class="md:col-span-2">
-          <ImageUpload v-model="form.image" />
-        </div>
-        <div>
-          <label for="campaign" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Campanha:</label>
-          <select id="campaign" v-model="form.campaign_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-900 dark:text-white leading-tight focus:outline-none focus:shadow-outline bg-white dark:bg-slate-700 border-gray-300 dark:border-gray-600" required>
-            <option value="" disabled>Selecione uma campanha</option>
-            <option v-for="campaign in campaignsStore.campaigns" :key="campaign.id" :value="campaign.id">
-              {{ campaign.name }}
-            </option>
-          </select>
-          <p v-if="validationErrors.campaign_id" class="text-red-500 text-xs italic mt-1">{{ validationErrors.campaign_id }}</p>
-        </div>
-      </div>
-
-      <h3 class="text-xl font-bold mb-3 text-amber-700 dark:text-amber-500">Atributos</h3>
-      <div class="grid grid-cols-3 gap-4 mb-4">
-        <div>
-          <label for="poder" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Poder:</label>
-          <input type="number" id="poder" v-model.number="form.Poder" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-900 dark:text-white leading-tight focus:outline-none focus:shadow-outline bg-white dark:bg-slate-700 border-gray-300 dark:border-gray-600" required>
-        </div>
-        <div>
-          <label for="habilidade" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Habilidade:</label>
-          <input type="number" id="habilidade" v-model.number="form.Habilidade" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-900 dark:text-white leading-tight focus:outline-none focus:shadow-outline bg-white dark:bg-slate-700 border-gray-300 dark:border-gray-600" required>
-        </div>
-        <div>
-          <label for="resistencia" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Resistência:</label>
-          <input type="number" id="resistencia" v-model.number="form.Resistencia" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-900 dark:text-white leading-tight focus:outline-none focus:shadow-outline bg-white dark:bg-slate-700 border-gray-300 dark:border-gray-600" required>
-        </div>
-        <div>
-          <label for="pontos_acao" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Pontos de Ação:</label>
-          <input type="number" id="pontos_acao" v-model.number="form.Pontos_Acao" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-900 dark:text-white leading-tight focus:outline-none focus:shadow-outline bg-white dark:bg-slate-700 border-gray-300 dark:border-gray-600" required>
-        </div>
-        <div>
-          <label for="pontos_mana" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Pontos de Mana:</label>
-          <input type="number" id="pontos_mana" v-model.number="form.Pontos_Mana" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-900 dark:text-white leading-tight focus:outline-none focus:shadow-outline bg-white dark:bg-slate-700 border-gray-300 dark:border-gray-600" required>
-        </div>
-        <div>
-          <label for="pontos_vida" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Pontos de Vida:</label>
-          <input type="number" id="pontos_vida" v-model.number="form.Pontos_Vida" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-900 dark:text-white leading-tight focus:outline-none focus:shadow-outline bg-white dark:bg-slate-700 border-gray-300 dark:border-gray-600" required>
-          <p v-if="validationErrors.Pontos_Vida" class="text-red-500 text-xs italic mt-1">{{ validationErrors.Pontos_Vida }}</p>
+        <div class="mb-4 relative">
+          <label for="pontos" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Pontos:</label>
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
+            <font-awesome-icon :icon="['fas', 'star']" class="text-gray-400" />
+          </div>
+          <input
+            type="number"
+            id="pontos"
+            v-model="formData.pontos"
+            class="block h-10 w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white pl-10"
+          />
         </div>
       </div>
 
-      <div class="flex justify-end gap-4 mt-6">
-        <button type="button" @click="$emit('close')" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-          Cancelar
+      <!-- Attributes -->
+      <div class="mt-6 p-4 border rounded-lg shadow-sm bg-slate-50 dark:bg-slate-700 border-gray-300 dark:border-slate-600">
+        <h3 class="text-lg font-bold mb-3 text-slate-800 dark:text-slate-100 flex items-center gap-x-2"><font-awesome-icon :icon="['fas', 'list-ol']" /><span>Atributos</span></h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="mb-4 relative">
+            <label for="Poder" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Poder:</label>
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
+              <font-awesome-icon :icon="['fas', 'hand-fist']" class="text-gray-400" />
+            </div>
+            <input
+              type="number"
+              id="Poder"
+              v-model="formData.Poder"
+              class="block h-10 w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white pl-10"
+            />
+          </div>
+          <div class="mb-4 relative">
+            <label for="Habilidade" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Habilidade:</label>
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
+              <font-awesome-icon :icon="['fas', 'brain']" class="text-gray-400" />
+            </div>
+            <input
+              type="number"
+              id="Habilidade"
+              v-model="formData.Habilidade"
+              class="block h-10 w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white pl-10"
+            />
+          </div>
+          <div class="mb-4 relative">
+            <label for="Resistencia" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Resistência:</label>
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
+              <font-awesome-icon :icon="['fas', 'shield-halved']" class="text-gray-400" />
+            </div>
+            <input
+              type="number"
+              id="Resistencia"
+              v-model="formData.Resistencia"
+              class="block h-10 w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white pl-10"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Life/Mana/Action Points -->
+      <div class="mt-6 p-4 border rounded-lg shadow-sm bg-slate-50 dark:bg-slate-700 border-gray-300 dark:border-slate-600">
+        <h3 class="text-lg font-bold mb-3 text-slate-800 dark:text-slate-100 flex items-center gap-x-2"><font-awesome-icon :icon="['fas', 'heart-pulse']" /><span>Pontos de Vida/Mana/Ação</span></h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="mb-4 relative">
+            <label for="Pontos_Vida" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Pontos de Vida:</label>
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
+              <font-awesome-icon :icon="['fas', 'heart']" class="text-gray-400" />
+            </div>
+            <input
+              type="number"
+              id="Pontos_Vida"
+              v-model="formData.Pontos_Vida"
+              class="block h-10 w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white pl-10"
+            />
+          </div>
+          <div class="mb-4 relative">
+            <label for="Pontos_Mana" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Pontos de Mana:</label>
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
+              <font-awesome-icon :icon="['fas', 'wand-magic-sparkles']" class="text-gray-400" />
+            </div>
+            <input
+              type="number"
+              id="Pontos_Mana"
+              v-model="formData.Pontos_Mana"
+              class="block h-10 w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white pl-10"
+            />
+          </div>
+          <div class="mb-4 relative">
+            <label for="Pontos_Acao" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Pontos de Ação:</label>
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
+              <font-awesome-icon :icon="['fas', 'bolt']" class="text-gray-400" />
+            </div>
+            <input
+              type="number"
+              id="Pontos_Acao"
+              v-model="formData.Pontos_Acao"
+              class="block h-10 w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white pl-10"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Image Upload -->
+      <div class="mt-6 p-4 border rounded-lg shadow-sm bg-slate-50 dark:bg-slate-700 border-gray-300 dark:border-slate-600">
+        <h3 class="text-lg font-bold mb-3 text-slate-800 dark:text-slate-100 flex items-center gap-x-2"><font-awesome-icon :icon="['fas', 'image']" /><span>Imagem</span></h3>
+        <ImageUpload :currentImageUrl="formData.image" @image-uploaded="handleImageUpload" />
+      </div>
+
+      <!-- Pericias -->
+      <div class="mt-6 p-4 border rounded-lg shadow-sm bg-slate-50 dark:bg-slate-700 border-gray-300 dark:border-slate-600">
+        <h3 class="text-lg font-bold mb-3 text-slate-800 dark:text-slate-100 flex items-center gap-x-2"><font-awesome-icon :icon="['fas', 'graduation-cap']" /><span>Perícias</span></h3>
+        <div v-for="(pericia, index) in formData.pericias" :key="index" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3 items-end p-3 border rounded-lg bg-white dark:bg-slate-800">
+          <div class="relative">
+            <label :for="`pericia-id-${index}`" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Perícia:</label>
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
+              <font-awesome-icon :icon="['fas', 'scroll']" class="text-gray-400" />
+            </div>
+            <select
+              :id="`pericia-id-${index}`"
+              v-model="pericia.pericia_id"
+              class="block h-10 w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-3"
+            >
+              <option :value="null" disabled>Selecione uma Perícia</option>
+              <option v-for="p in periciasStore.pericias" :key="p.id" :value="p.id">{{ p.name }}</option>
+            </select>
+          </div>
+          <button type="button" @click="removeVantagem(index)" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center justify-center gap-x-2">
+            <font-awesome-icon :icon="['fas', 'trash']" />
+            <span>Remover</span>
+          </button>
+        </div>
+        <button type="button" @click="addPericia" class="mt-2 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 flex items-center gap-x-2">
+          <font-awesome-icon :icon="['fas', 'plus']" />
+          <span>Adicionar Perícia</span>
         </button>
-        <button type="submit" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-          {{ form.id ? 'Salvar Alterações' : `Adicionar ${entityName}` }}
+      </div>
+
+      <!-- Vantagens -->
+      <div class="mt-6 p-4 border rounded-lg shadow-sm bg-slate-50 dark:bg-slate-700 border-gray-300 dark:border-slate-600">
+        <h3 class="text-lg font-bold mb-3 text-slate-800 dark:text-slate-100 flex items-center gap-x-2"><font-awesome-icon :icon="['fas', 'thumbs-up']" /><span>Vantagens</span></h3>
+        <div v-for="(vantagem, index) in formData.vantagens" :key="index" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3 items-end p-3 border rounded-lg bg-white dark:bg-slate-800">
+          <div class="relative">
+            <label :for="`vantagem-id-${index}`" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Vantagem:</label>
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
+              <font-awesome-icon :icon="['fas', 'scroll']" class="text-gray-400" />
+            </div>
+            <select
+              :id="`vantagem-id-${index}`"
+              v-model="vantagem.vantagem_id"
+              class="block h-10 w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-3"
+            >
+              <option :value="null" disabled>Selecione uma Vantagem</option>
+              <option v-for="v in vantagensStore.vantagens" :key="v.id" :value="v.id">{{ v.name }}</option>
+            </select>
+          </div>
+          <button type="button" @click="removeVantagem(index)" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center justify-center gap-x-2">
+            <font-awesome-icon :icon="['fas', 'trash']" />
+            <span>Remover</span>
+          </button>
+        </div>
+        <button type="button" @click="addVantagem" class="mt-2 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 flex items-center gap-x-2">
+          <font-awesome-icon :icon="['fas', 'plus']" />
+          <span>Adicionar Vantagem</span>
+        </button>
+      </div>
+
+      <!-- Desvantagens -->
+      <div class="mt-6 p-4 border rounded-lg shadow-sm bg-slate-50 dark:bg-slate-700 border-gray-300 dark:border-slate-600">
+        <h3 class="text-lg font-bold mb-3 text-slate-800 dark:text-slate-100 flex items-center gap-x-2"><font-awesome-icon :icon="['fas', 'thumbs-down']" /><span>Desvantagens</span></h3>
+        <div v-for="(desvantagem, index) in formData.desvantagens" :key="index" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3 items-end p-3 border rounded-lg bg-white dark:bg-slate-800">
+          <div class="relative">
+            <label :for="`desvantagem-id-${index}`" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Desvantagem:</label>
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
+              
+            </div>
+            <select
+              :id="`desvantagem-id-${index}`"
+              v-model="desvantagem.desvantagem_id"
+              class="block h-10 w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-3"
+            >
+              <option :value="null" disabled>Selecione uma Desvantagem</option>
+              <option v-for="d in desvantagensStore.desvantagens" :key="d.id" :value="d.id">{{ d.name }}</option>
+            </select>
+          </div>
+          <button type="button" @click="removeDesvantagem(index)" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center justify-center gap-x-2">
+            <font-awesome-icon :icon="['fas', 'trash']" />
+            <span>Remover</span>
+          </button>
+        </div>
+        <button type="button" @click="addDesvantagem" class="mt-2 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 flex items-center gap-x-2">
+          <font-awesome-icon :icon="['fas', 'plus']" />
+          <span>Adicionar Desvantagem</span>
+        </button>
+      </div>
+
+      <!-- Tecnicas -->
+      <div class="mt-6 p-4 border rounded-lg shadow-sm bg-slate-50 dark:bg-slate-700 border-gray-300 dark:border-slate-600">
+        <h3 class="text-lg font-bold mb-3 text-slate-800 dark:text-slate-100 flex items-center gap-x-2"><font-awesome-icon :icon="['fas', 'hat-wizard']" /><span>Técnicas</span></h3>
+        <div v-for="(tecnica, index) in formData.tecnicas" :key="index" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3 items-end p-3 border rounded-lg bg-white dark:bg-slate-800">
+          <div class="relative">
+            <label :for="`tecnica-id-${index}`" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Técnica:</label>
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
+              
+            </div>
+            <select
+              :id="`tecnica-id-${index}`"
+              v-model="tecnica.tecnica_id"
+              class="block h-10 w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-3"
+            >
+              <option :value="null" disabled>Selecione uma Técnica</option>
+              <option v-for="t in tecnicasStore.tecnicas" :key="t.id" :value="t.id">{{ t.name }}</option>
+            </select>
+          </div>
+          <button type="button" @click="removeTecnica(index)" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center justify-center gap-x-2">
+            <font-awesome-icon :icon="['fas', 'trash']" />
+            <span>Remover</span>
+          </button>
+        </div>
+        <button type="button" @click="addTecnica" class="mt-2 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 flex items-center gap-x-2">
+          <font-awesome-icon :icon="['fas', 'plus']" />
+          <span>Adicionar Técnica</span>
+        </button>
+      </div>
+
+      <div class="flex justify-end space-x-2 mt-6">
+        <button
+          type="button"
+          @click="emit('close')"
+          class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white dark:hover:bg-slate-500 flex items-center gap-x-2"
+        >
+          <font-awesome-icon :icon="['fas', 'times']" />
+          <span>Cancelar</span>
+        </button>
+        <button
+          type="submit"
+          class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 flex items-center gap-x-2"
+        >
+          <font-awesome-icon :icon="['fas', 'save']" />
+          <span>Salvar</span>
         </button>
       </div>
     </form>
@@ -73,86 +284,142 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, computed, onMounted } from 'vue';
+import { usePericiasStore } from '../stores/pericias';
+import { useVantagensStore } from '../stores/vantagens';
+import { useDesvantagensStore } from '../stores/desvantagens';
+import { useTecnicasStore } from '../stores/tecnicas';
 import ImageUpload from './ImageUpload.vue';
-import { useCampaignsStore } from '../stores/campaigns';
-import { useAuthStore } from '../stores/auth';
 
 const props = defineProps({
   entity: {
     type: Object,
     default: null,
   },
-  entityName: {
+  entityType: {
     type: String,
     required: true,
+    validator: (value) => ['personagem', 'npc', 'monstro'].includes(value),
+  },
+  campaignId: {
+    type: Number,
+    required: true,
+  },
+  isEditMode: {
+    type: Boolean,
+    default: false,
   },
 });
 
-const emit = defineEmits(['close', 'save']);
+const emit = defineEmits(['save', 'close']);
 
-const campaignsStore = useCampaignsStore();
-const authStore = useAuthStore();
+const periciasStore = usePericiasStore();
+const vantagensStore = useVantagensStore();
+const desvantagensStore = useDesvantagensStore();
+const tecnicasStore = useTecnicasStore();
 
-const form = ref({});
-const validationErrors = ref({});
+const formData = ref({
+  name: '',
+  concept: '',
+  archetype: '',
+  pontos: '',
+  Habilidade: null,
+  Poder: null,
+  Resistencia: null,
+  Pontos_Acao: null,
+  Pontos_Mana: null,
+  Pontos_Vida: null,
+  image: '', // Changed from image_url to image
+  pericias: [],
+  vantagens: [],
+  desvantagens: [],
+  tecnicas: [],
+});
 
-const resetForm = () => {
-  form.value = {
-    id: null,
-    name: '',
-    archetype: '',
-    concept: '',
-    Poder: 0,
-    Habilidade: 0,
-    Resistencia: 0,
-    Pontos_Acao: 0,
-    Pontos_Mana: 0,
-    Pontos_Vida: 0,
-    image: null,
-    campaign_id: campaignsStore.campaigns.length > 0 ? campaignsStore.campaigns[0].id : null,
-  };
-  validationErrors.value = {};
-};
-
-watch(() => props.entity, (newVal) => {
-  if (newVal) {
-    form.value = { ...newVal };
-  } else {
-    resetForm();
-  }
-}, { immediate: true, deep: true });
-
-onMounted(async () => {
-  if (authStore.user) {
-    await campaignsStore.fetchCampaigns(authStore.user.id);
-    // Set default campaign if creating a new entity
-    if (!props.entity && campaignsStore.campaigns.length > 0) {
-      form.value.campaign_id = campaignsStore.campaigns[0].id;
-    }
+const entityTypeName = computed(() => {
+  switch (props.entityType) {
+    case 'personagem':
+      return 'Personagem';
+    case 'npc':
+      return 'NPC';
+    case 'monstro':
+      return 'Monstro';
+    default:
+      return 'Entidade';
   }
 });
 
-const validateForm = () => {
-  validationErrors.value = {};
-  if (!form.value.name) {
-    validationErrors.value.name = 'Nome é obrigatório.';
+watch(() => props.entity, (newEntity) => {
+  if (newEntity) {
+    formData.value = {
+      ...newEntity,
+      pericias: newEntity.pericias || [],
+      vantagens: newEntity.vantagens || [],
+      desvantagens: newEntity.desvantagens || [],
+      tecnicas: newEntity.tecnicas || [],
+    };
+  } else {
+    // Reset form for new entity creation
+    formData.value = {
+      name: '',
+      concept: '',
+      archetype: '',
+      pontos: '',
+      Habilidade: null,
+      Poder: null,
+      Resistencia: null,
+      Pontos_Acao: null,
+      Pontos_Mana: null,
+      Pontos_Vida: null,
+      image: '',
+      pericias: [],
+      vantagens: [],
+      desvantagens: [],
+      tecnicas: [],
+    };
   }
-  if (!form.value.campaign_id) {
-    validationErrors.value.campaign_id = 'Campanha é obrigatória.';
-  }
-  const numericFields = ['Poder', 'Habilidade', 'Resistencia', 'Pontos_Acao', 'Pontos_Mana', 'Pontos_Vida'];
-  numericFields.forEach(field => {
-    if (typeof form.value[field] !== 'number' || isNaN(form.value[field])) {
-      validationErrors.value[field] = `${field.replace('_', ' ')} deve ser um número.`;
-    }
-  });
-  return Object.keys(validationErrors.value).length === 0;
+}, { immediate: true });
+
+const handleImageUpload = (url) => {
+  formData.value.image = url;
 };
 
-const handleSubmit = () => {
-  if (validateForm()) {
-    emit('save', form.value);
-  }
+const addPericia = () => {
+  formData.value.pericias.push({ pericia_id: null });
 };
+const removePericia = (index) => {
+  formData.value.pericias.splice(index, 1);
+};
+
+const addVantagem = () => {
+  formData.value.vantagens.push({ vantagem_id: null });
+};
+const removeVantagem = (index) => {
+  formData.value.vantagens.splice(index, 1);
+};
+
+const addDesvantagem = () => {
+  formData.value.desvantagens.push({ desvantagem_id: null });
+};
+const removeDesvantagem = (index) => {
+  formData.value.desvantagens.splice(index, 1);
+};
+
+const addTecnica = () => {
+  formData.value.tecnicas.push({ tecnica_id: null });
+};
+const removeTecnica = (index) => {
+  formData.value.tecnicas.splice(index, 1);
+};
+
+const submitForm = () => {
+  emit('save', { ...formData.value, campaign_id: props.campaignId });
+};
+
+onMounted(async () => {
+  await periciasStore.fetchPericias();
+  await vantagensStore.fetchVantagens();
+  await desvantagensStore.fetchDesvantagens();
+  await tecnicasStore.fetchTecnicas();
+});
 </script>
