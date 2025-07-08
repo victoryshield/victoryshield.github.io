@@ -8,6 +8,8 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: --openssl-legacy-provider
 
     steps:
       - name: Checkout
@@ -29,8 +31,6 @@ jobs:
 
       - name: Build
         run: npm run build
-        env:
-          NODE_OPTIONS: --openssl-legacy-provider
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
