@@ -35,7 +35,7 @@
                   <td class="py-2 dark:text-slate-300">Resultado 6 no dado. Permite <strong>somar o Atributo de novo</strong>.</td>
                 </tr>
                 <tr>
-                  <td class="py-2 font-semibold flex items-center gap-x-2 dark:text-slate-100"><font-awesome-icon :icon="['fas', 'skull-crossbones']" class="text-slate-500" /><span>Falha Crítica</span></td>
+                  <td class="py-2 font-semibold flex items-center gap-x-2 dark:text-slate-100"><font-awesome-icon :icon="['fas', 'skull-crossbones']" class="text-red-500" /><span>Erro Crítico</span></td>
                   <td class="py-2 dark:text-slate-300">Todos os dados resultam 1. Consequência narrativa.</td>
                 </tr>
               </tbody>
@@ -59,7 +59,11 @@
             <p class="text-3xl font-bold my-1 text-slate-800 dark:text-white">{{ totalRoll }}</p>
             <div class="flex justify-center gap-2">
               <span v-for="(die, index) in diceResults" :key="index" class="flex items-center justify-center w-8 h-8 rounded shadow font-bold"
-                :class="{'bg-yellow-400 text-black shadow-lg font-bold ring-2 ring-offset-2 ring-offset-slate-200 dark:ring-offset-slate-900 ring-yellow-500': die === 6, 'bg-white dark:bg-slate-700': die !== 6}">
+                :class="{
+                  'bg-yellow-400 text-black shadow-lg font-bold ring-2 ring-offset-2 ring-offset-slate-200 dark:ring-offset-slate-900 ring-yellow-500': die === 6,
+                  'bg-red-500 text-white shadow-lg font-bold ring-2 ring-offset-2 ring-offset-slate-200 dark:ring-offset-slate-900 ring-red-600': die === 1,
+                  'bg-white dark:bg-slate-700': die !== 6 && die !== 1
+                }">
                 {{ die }}
               </span>
             </div>
@@ -164,7 +168,7 @@ import { ref } from 'vue';
 
 const totalRoll = ref(0);
 const diceResults = ref([]);
-const rollMessage = ref('Habilidade 4 + Rolagem');
+const rollMessage = ref('');
 const criticalMessage = ref('');
 
 const rollDice = (numDice) => {
@@ -191,8 +195,8 @@ const rollDice = (numDice) => {
 
   if (hasSix) {
     criticalMessage.value = 'Crítico! Some o Atributo de novo.';
-  } else if (allOnes && numDice > 1) {
-    criticalMessage.value = 'Falha Crítica! Consequência narrativa.';
+  } else if (allOnes) {
+    criticalMessage.value = 'Erro Crítico!';
   }
 };
 </script>

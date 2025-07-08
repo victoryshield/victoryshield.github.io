@@ -66,21 +66,21 @@
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
               <font-awesome-icon :icon="['fas', 'tag']" class="text-gray-400" />
             </div>
-            <input type="text" :id="`objetivo-type-${index}`" v-model="objetivo.type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-10" />
+            <input type="text" :id="`objetivo-type-${index}`" v-model="objetivo.type" class="h-10 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-10" />
           </div>
           <div class="md:col-span-2 relative">
             <label :for="`objetivo-description-${index}`" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Descrição:</label>
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
               <font-awesome-icon :icon="['fas', 'align-left']" class="text-gray-400" />
             </div>
-            <textarea :id="`objetivo-description-${index}`" v-model="objetivo.description" rows="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-10"></textarea>
+            <textarea :id="`objetivo-description-${index}`" v-model="objetivo.description" rows="1" class="h-10 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-10"></textarea>
           </div>
           <button type="button" @click="removeObjetivo(index)" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center justify-center gap-x-2">
             <font-awesome-icon :icon="['fas', 'trash']" />
             <span>Remover</span>
           </button>
         </div>
-        <button type="button" @click="addObjetivo" class="mt-2 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center justify-center gap-x-2">
+        <button type="button" @click="addObjetivo" class="mt-2 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 flex items-center justify-center gap-x-2">
           <font-awesome-icon :icon="['fas', 'plus']" />
           <span>Adicionar Objetivo</span>
         </button>
@@ -95,21 +95,21 @@
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
               <font-awesome-icon :icon="['fas', 'user']" class="text-gray-400" />
             </div>
-            <input type="text" :id="`gancho-personagem-${index}`" v-model="gancho.personagem_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-10" />
+            <input type="text" :id="`gancho-personagem-${index}`" v-model="gancho.personagem_name" class="h-10 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-10" />
           </div>
           <div class="md:col-span-2 relative">
             <label :for="`gancho-description-${index}`" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Descrição:</label>
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
               <font-awesome-icon :icon="['fas', 'align-left']" class="text-gray-400" />
             </div>
-            <textarea :id="`gancho-description-${index}`" v-model="gancho.description" rows="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-10"></textarea>
+            <textarea :id="`gancho-description-${index}`" v-model="gancho.description" rows="1" class="h-10 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-10"></textarea>
           </div>
           <button type="button" @click="removeGancho(index)" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center justify-center gap-x-2">
             <font-awesome-icon :icon="['fas', 'trash']" />
             <span>Remover</span>
           </button>
         </div>
-        <button type="button" @click="addGancho" class="mt-2 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center justify-center gap-x-2">
+        <button type="button" @click="addGancho" class="mt-2 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 flex items-center gap-x-2">
           <font-awesome-icon :icon="['fas', 'plus']" />
           <span>Adicionar Gancho</span>
         </button>
@@ -124,7 +124,7 @@
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
               <font-awesome-icon :icon="['fas', 'map-pin']" class="text-gray-400" />
             </div>
-            <input type="text" :id="`local-name-${localIndex}`" v-model="local.name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-10" />
+            <input type="text" :id="`local-name-${localIndex}`" v-model="local.name" class="h-10 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-10" />
             <button type="button" @click="removeLocal(localIndex)" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline text-sm flex items-center justify-center gap-x-1">
               <font-awesome-icon :icon="['fas', 'trash']" />
               <span>Remover Local</span>
@@ -135,18 +135,18 @@
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
               <font-awesome-icon :icon="['fas', 'info-circle']" class="text-gray-400" />
             </div>
-            <textarea :id="`carac-description-${localIndex}-${caracIndex}`" v-model="carac.description" rows="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-10"></textarea>
+            <textarea :id="`carac-description-${localIndex}-${caracIndex}`" v-model="carac.description" rows="1" class="h-10 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-10"></textarea>
             <button type="button" @click="removeCaracteristica(localIndex, caracIndex)" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center justify-center gap-x-2">
               <font-awesome-icon :icon="['fas', 'trash']" />
               <span>Remover</span>
             </button>
           </div>
-          <button type="button" @click="addCaracteristica(localIndex)" class="mt-2 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center justify-center gap-x-2">
-            <font-awesome-icon :icon="['fas', 'plus']" />
-            <span>Adicionar Característica</span>
-          </button>
+          <button type="button" @click="addCaracteristica(localIndex)" class="mt-2 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 flex items-center gap-x-2">
+          <font-awesome-icon :icon="['fas', 'plus']" />
+          <span>Adicionar Característica</span>
+        </button>
         </div>
-        <button type="button" @click="addLocal" class="mt-2 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center justify-center gap-x-2">
+        <button type="button" @click="addLocal" class="mt-2 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 flex items-center gap-x-2">
           <font-awesome-icon :icon="['fas', 'plus']" />
           <span>Adicionar Local</span>
         </button>
@@ -161,14 +161,14 @@
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
               <font-awesome-icon :icon="['fas', 'id-badge']" class="text-gray-400" />
             </div>
-            <input type="number" :id="`npc-id-${index}`" v-model="npc.npc_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-10" />
+            <input type="number" :id="`npc-id-${index}`" v-model="npc.npc_id" class="h-10 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-10" />
           </div>
           <button type="button" @click="removeNpc(index)" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center justify-center gap-x-2">
             <font-awesome-icon :icon="['fas', 'trash']" />
             <span>Remover</span>
           </button>
         </div>
-        <button type="button" @click="addNpc" class="mt-2 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center justify-center gap-x-2">
+        <button type="button" @click="addNpc" class="mt-2 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 flex items-center gap-x-2">
           <font-awesome-icon :icon="['fas', 'plus']" />
           <span>Adicionar NPC</span>
         </button>
@@ -183,28 +183,28 @@
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
               <font-awesome-icon :icon="['fas', 'heading']" class="text-gray-400" />
             </div>
-            <input type="text" :id="`encontro-title-${index}`" v-model="encontro.title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-10" />
+            <input type="text" :id="`encontro-title-${index}`" v-model="encontro.title" class="h-10 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-10" />
           </div>
           <div class="relative">
             <label :for="`encontro-description-${index}`" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Descrição:</label>
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
               <font-awesome-icon :icon="['fas', 'align-left']" class="text-gray-400" />
             </div>
-            <textarea :id="`encontro-description-${index}`" v-model="encontro.description" rows="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-10"></textarea>
+            <textarea :id="`encontro-description-${index}`" v-model="encontro.description" rows="1" class="h-10 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-10"></textarea>
           </div>
           <div class="relative">
             <label :for="`encontro-mecanica-${index}`" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Mecânica:</label>
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
               <font-awesome-icon :icon="['fas', 'cogs']" class="text-gray-400" />
             </div>
-            <input type="text" :id="`encontro-mecanica-${index}`" v-model="encontro.mecanica" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-10" />
+            <input type="text" :id="`encontro-mecanica-${index}`" v-model="encontro.mecanica" class="h-10 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-10" />
           </div>
           <button type="button" @click="removeEncontro(index)" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center justify-center gap-x-2">
             <font-awesome-icon :icon="['fas', 'trash']" />
             <span>Remover</span>
           </button>
         </div>
-        <button type="button" @click="addEncontro" class="mt-2 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center justify-center gap-x-2">
+        <button type="button" @click="addEncontro" class="mt-2 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 flex items-center gap-x-2">
           <font-awesome-icon :icon="['fas', 'plus']" />
           <span>Adicionar Encontro</span>
         </button>
@@ -219,14 +219,14 @@
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
               <font-awesome-icon :icon="['fas', 'align-left']" class="text-gray-400" />
             </div>
-            <textarea :id="`segredo-description-${index}`" v-model="segredo.description" rows="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-10"></textarea>
+            <textarea :id="`segredo-description-${index}`" v-model="segredo.description" rows="1" class="h-10 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-10"></textarea>
           </div>
           <button type="button" @click="removeSegredo(index)" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center justify-center gap-x-2">
             <font-awesome-icon :icon="['fas', 'trash']" />
             <span>Remover</span>
           </button>
         </div>
-        <button type="button" @click="addSegredo" class="mt-2 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center justify-center gap-x-2">
+        <button type="button" @click="addSegredo" class="mt-2 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 flex items-center gap-x-2">
           <font-awesome-icon :icon="['fas', 'plus']" />
           <span>Adicionar Segredo</span>
         </button>
@@ -241,21 +241,21 @@
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
               <font-awesome-icon :icon="['fas', 'gem']" class="text-gray-400" />
             </div>
-            <input type="text" :id="`tesouro-name-${index}`" v-model="tesouro.name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-10" />
+            <input type="text" :id="`tesouro-name-${index}`" v-model="tesouro.name" class="h-10 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-10" />
           </div>
           <div class="md:col-span-2">
             <label :for="`tesouro-description-${index}`" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Descrição Mecânica:</label>
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
               <font-awesome-icon :icon="['fas', 'scroll']" class="text-gray-400" />
             </div>
-            <textarea :id="`tesouro-description-${index}`" v-model="tesouro.description_mecanica" rows="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-10"></textarea>
+            <textarea :id="`tesouro-description-${index}`" v-model="tesouro.description_mecanica" rows="1" class="h-10 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white pl-10"></textarea>
           </div>
           <button type="button" @click="removeTesouro(index)" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center justify-center gap-x-2">
             <font-awesome-icon :icon="['fas', 'trash']" />
             <span>Remover</span>
           </button>
         </div>
-        <button type="button" @click="addTesouro" class="mt-2 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center justify-center gap-x-2">
+        <button type="button" @click="addTesouro" class="mt-2 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 flex items-center gap-x-2">
           <font-awesome-icon :icon="['fas', 'plus']" />
           <span>Adicionar Tesouro</span>
         </button>
@@ -316,13 +316,16 @@ watch(() => props.session, (newSession) => {
   if (newSession) {
     formData.value = {
       ...newSession,
-      session_objetivos: newSession.session_objetivos || [],
-      session_ganchos_personagens: newSession.session_ganchos_personagens || [],
-      session_locais_interessantes: newSession.session_locais_interessantes || [],
-      session_npcs_importantes: newSession.session_npcs_importantes || [],
-      session_encontros_desafios: newSession.session_encontros_desafios || [],
-      session_segredos_rumores: newSession.session_segredos_rumores || [],
-      session_tesouros_recompensas: newSession.session_tesouros_recompensas || [],
+      session_objetivos: newSession.session_objetivos ? JSON.parse(JSON.stringify(newSession.session_objetivos)) : [],
+      session_ganchos_personagens: newSession.session_ganchos_personagens ? JSON.parse(JSON.stringify(newSession.session_ganchos_personagens)) : [],
+      session_locais_interessantes: newSession.session_locais_interessantes ? newSession.session_locais_interessantes.map(local => ({
+        ...local,
+        session_locais_caracteristicas: local.session_locais_caracteristicas ? JSON.parse(JSON.stringify(local.session_locais_caracteristicas)) : []
+      })) : [],
+      session_npcs_importantes: newSession.session_npcs_importantes ? JSON.parse(JSON.stringify(newSession.session_npcs_importantes)) : [],
+      session_encontros_desafios: newSession.session_encontros_desafios ? JSON.parse(JSON.stringify(newSession.session_encontros_desafios)) : [],
+      session_segredos_rumores: newSession.session_segredos_rumores ? JSON.parse(JSON.stringify(newSession.session_segredos_rumores)) : [],
+      session_tesouros_recompensas: newSession.session_tesouros_recompensas ? JSON.parse(JSON.stringify(newSession.session_tesouros_recompensas)) : [],
     };
   } else {
     // Reset form for new session creation

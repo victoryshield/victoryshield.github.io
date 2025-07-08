@@ -1,7 +1,6 @@
 <template>
-  <div class="container relative mx-auto p-4 sm:p-6 md:p-8">
-    <div class="p-4 rounded-lg shadow bg-white dark:bg-slate-800">
-      <h2 class="text-2xl font-bold mb-4 text-amber-700 dark:text-amber-500 flex items-center gap-x-2">
+  <div class="p-6 rounded-lg shadow bg-white dark:bg-slate-800">
+      <h2 class="text-xl font-bold mb-4 text-amber-700 dark:text-amber-500 flex items-center gap-x-2">
         <font-awesome-icon :icon="['fas', 'book']" /><span>Regras do Jogo</span>
       </h2>
 
@@ -70,15 +69,15 @@
             class="text-center text-red-500">Erro ao carregar os dados.</div>
           <div v-else-if="filteredItems.length === 0" class="text-center text-slate-500 dark:text-slate-400">Nenhum
             resultado encontrado.</div>
-          <div v-else class="space-y-4">
+          <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div v-for="item in filteredItems" :key="item.id + item.type"
-              class="p-3 rounded-md bg-white dark:bg-slate-800 shadow-sm">
-              <h4 class="font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-x-2">
-                <font-awesome-icon :icon="getIcon(item.type)" />
-                <span>{{ item.name }}</span>
+              class="p-6 rounded-lg bg-white dark:bg-slate-800 shadow-md">
+              <h4 class="font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-x-2 mb-2">
+                <font-awesome-icon :icon="getIcon(item.type)" class="text-xl" />
+                <span class="text-xl">{{ item.name }}</span>
               </h4>
-              <p class="text-slate-700 dark:text-slate-300 text-sm" v-html="formatDescription(item.description)"></p>
-              <p v-if="item.requirements" class="text-slate-600 dark:text-slate-400 text-xs mt-1">Requisitos: {{
+              <p class="text-slate-700 dark:text-slate-300 text-sm leading-relaxed" v-html="formatDescription(item.description)"></p>
+              <p v-if="item.requirements" class="text-slate-600 dark:text-slate-400 text-xs mt-2">Requisitos: {{
                 item.requirements }}</p>
               <p v-if="item.duration" class="text-slate-600 dark:text-slate-400 text-xs mt-1">Duração: {{ item.duration
                 }}</p>
@@ -87,7 +86,6 @@
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script setup>

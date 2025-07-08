@@ -24,7 +24,7 @@ export const usePersonagensStore = defineStore('personagens', {
             personagens_tecnicas!left(*, tecnicas(id, name))
             `
           );
-        console.log('Supabase select query string:', `id, name, archetype, concept, pontos, Habilidade, Poder, Resistencia, Pontos_Acao, Pontos_Mana, Pontos_Vida, image, campaign_id, personagens_pericias!left(*, pericias(id, name)), personagens_vantagens!left(*, vantagens(id, name)), personagens_desvantagens!left(*, desvantagens(id, name)), personagens_tecnicas!left(*, tecnicas(id, name))`);
+        
 
         if (campaignId) {
           query = query.eq('campaign_id', campaignId);
@@ -65,9 +65,7 @@ export const usePersonagensStore = defineStore('personagens', {
 
         // Insert related data
         if (pericias && pericias.length > 0) {
-          console.log('Raw Pericias before filter:', JSON.stringify(pericias, null, 2));
-          const filteredPericias = pericias.filter(p => p.pericia_id !== null);
-          console.log('Filtered Pericias for insert:', JSON.stringify(filteredPericias, null, 2));
+          
           if (filteredPericias.length > 0) {
             const { error: periciasError } = await supabase
               .from('personagens_pericias')
@@ -76,9 +74,7 @@ export const usePersonagensStore = defineStore('personagens', {
           }
         }
         if (vantagens && vantagens.length > 0) {
-          console.log('Raw Vantagens before filter:', JSON.stringify(vantagens, null, 2));
-          const filteredVantagens = vantagens.filter(v => v.vantagem_id !== null);
-          console.log('Filtered Vantagens for insert:', JSON.stringify(filteredVantagens, null, 2));
+          
           if (filteredVantagens.length > 0) {
             const { error: vantagensError } = await supabase
               .from('personagens_vantagens')
@@ -87,9 +83,7 @@ export const usePersonagensStore = defineStore('personagens', {
           }
         }
         if (desvantagens && desvantagens.length > 0) {
-          console.log('Raw Desvantagens before filter:', JSON.stringify(desvantagens, null, 2));
-          const filteredDesvantagens = desvantagens.filter(d => d.desvantagem_id !== null);
-          console.log('Filtered Desvantagens for insert:', JSON.stringify(filteredDesvantagens, null, 2));
+          
           if (filteredDesvantagens.length > 0) {
             const { error: desvantagensError } = await supabase
               .from('personagens_desvantagens')
@@ -98,9 +92,7 @@ export const usePersonagensStore = defineStore('personagens', {
           }
         }
         if (tecnicas && tecnicas.length > 0) {
-          console.log('Raw Tecnicas before filter:', JSON.stringify(tecnicas, null, 2));
           const filteredTecnicas = tecnicas.filter(t => t.tecnica_id !== null);
-          console.log('Filtered Tecnicas for insert:', JSON.stringify(filteredTecnicas, null, 2));
           if (filteredTecnicas.length > 0) {
             const { error: tecnicasError } = await supabase
               .from('personagens_tecnicas')
@@ -158,9 +150,7 @@ export const usePersonagensStore = defineStore('personagens', {
         // Pericias
         await supabase.from('personagens_pericias').delete().eq('personagem_id', id);
         if (pericias && pericias.length > 0) {
-          console.log('Raw Pericias before filter:', JSON.stringify(pericias, null, 2));
           const filteredPericias = pericias.filter(p => p.pericia_id !== null);
-          console.log('Filtered Pericias for update:', JSON.stringify(filteredPericias, null, 2));
           if (filteredPericias.length > 0) {
             const { error: periciasError } = await supabase
               .from('personagens_pericias')
@@ -172,9 +162,7 @@ export const usePersonagensStore = defineStore('personagens', {
         // Vantagens
         await supabase.from('personagens_vantagens').delete().eq('personagem_id', id);
         if (vantagens && vantagens.length > 0) {
-          console.log('Raw Vantagens before filter:', JSON.stringify(vantagens, null, 2));
           const filteredVantagens = vantagens.filter(v => v.vantagem_id !== null);
-          console.log('Filtered Vantagens for update:', JSON.stringify(filteredVantagens, null, 2));
           if (filteredVantagens.length > 0) {
             const { error: vantagensError } = await supabase
               .from('personagens_vantagens')
@@ -186,9 +174,7 @@ export const usePersonagensStore = defineStore('personagens', {
         // Desvantagens
         await supabase.from('personagens_desvantagens').delete().eq('personagem_id', id);
         if (desvantagens && desvantagens.length > 0) {
-          console.log('Raw Desvantagens before filter:', JSON.stringify(desvantagens, null, 2));
           const filteredDesvantagens = desvantagens.filter(d => d.desvantagem_id !== null);
-          console.log('Filtered Desvantagens for update:', JSON.stringify(filteredDesvantagens, null, 2));
           if (filteredDesvantagens.length > 0) {
             const { error: desvantagensError } = await supabase
               .from('personagens_desvantagens')
@@ -200,9 +186,7 @@ export const usePersonagensStore = defineStore('personagens', {
         // Tecnicas
         await supabase.from('personagens_tecnicas').delete().eq('personagem_id', id);
         if (tecnicas && tecnicas.length > 0) {
-          console.log('Raw Tecnicas before filter:', JSON.stringify(tecnicas, null, 2));
           const filteredTecnicas = tecnicas.filter(t => t.tecnica_id !== null);
-          console.log('Filtered Tecnicas for update:', JSON.stringify(filteredTecnicas, null, 2));
           if (filteredTecnicas.length > 0) {
             const { error: tecnicasError } = await supabase
               .from('personagens_tecnicas')

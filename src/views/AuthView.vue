@@ -83,7 +83,7 @@
         <div class="flex items-center justify-between">
           <button
             type="submit"
-            class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center gap-x-2"
+            class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 flex items-center gap-x-2"
           >
             <font-awesome-icon :icon="['fas', 'user-plus']" />
             <span>Registrar</span>

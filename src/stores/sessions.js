@@ -59,7 +59,7 @@ export const useSessionsStore = defineStore('sessions', {
 
         if (error) {
           if (error.code === 'PGRST116') { // "single()" row not found
-            console.log('Nenhuma sessão encontrada para esta campanha.');
+            
             this.activeSession = null;
           } else {
             throw error;
@@ -129,7 +129,6 @@ export const useSessionsStore = defineStore('sessions', {
         await Promise.all(insertPromises);
 
         this.sessions.unshift(newSession);
-        await this.fetchLatestSessionWithDetails(campaign_id);
       } catch (error) {
         this.error = error.message;
       } finally {
@@ -208,7 +207,7 @@ export const useSessionsStore = defineStore('sessions', {
           this.sessions[index] = updatedSession;
         }
         if (this.activeSession && this.activeSession.id === id) {
-          await this.fetchLatestSessionWithDetails(campaign_id);
+          // No need to fetch latest session with details here, as the active session will be updated by the handleSessionUpdate in the view
         }
       } catch (error) {
         this.error = error.message;
@@ -224,7 +223,7 @@ export const useSessionsStore = defineStore('sessions', {
         if (error) throw error;
         this.sessions = this.sessions.filter(s => s.id !== id);
         if (this.activeSession && this.activeSession.id === id) {
-          await this.fetchLatestSessionWithDetails(campaignId);
+          // No need to fetch latest session with details here, as the active session will be updated by the handleSessionUpdate in the view
         }
       } catch (error) {
         this.error = error.message;

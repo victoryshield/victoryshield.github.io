@@ -13,7 +13,7 @@ export const usePericiasStore = defineStore('pericias', () => {
     try {
       const { data, error: supabaseError } = await supabase
         .from('pericias')
-        .select('id, name');
+        .select('id, name, description');
       if (supabaseError) throw supabaseError;
       pericias.value = data;
     } catch (err) {

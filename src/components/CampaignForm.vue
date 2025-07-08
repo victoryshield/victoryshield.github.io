@@ -14,11 +14,13 @@
         </div>
 
         <div class="flex justify-end gap-4 mt-6">
-          <button type="button" @click="$emit('close')" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-            Cancelar
+          <button type="button" @click="$emit('close')" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 dark:bg-slate-600 dark:border-slate-500 dark:text-white dark:hover:bg-slate-500 flex items-center justify-center gap-x-2">
+            <font-awesome-icon :icon="['fas', 'times']" />
+            <span>Cancelar</span>
           </button>
-          <button type="submit" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-            {{ isEditing ? 'Salvar Alterações' : 'Criar Campanha' }}
+          <button type="submit" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 flex items-center justify-center gap-x-2">
+            <font-awesome-icon :icon="['fas', 'save']" />
+            <span>{{ isEditing ? 'Salvar Alterações' : 'Criar Campanha' }}</span>
           </button>
         </div>
       </form>
@@ -47,6 +49,15 @@ const form = ref({
 
 const validationErrors = ref({});
 
+const resetForm = () => {
+  form.value = {
+    id: null,
+    name: '',
+    description: '',
+  };
+  validationErrors.value = {};
+};
+
 watch(() => props.campaign, (newVal) => {
   if (newVal) {
     isEditing.value = true;
@@ -56,15 +67,6 @@ watch(() => props.campaign, (newVal) => {
     resetForm();
   }
 }, { immediate: true });
-
-const resetForm = () => {
-  form.value = {
-    id: null,
-    name: '',
-    description: '',
-  };
-  validationErrors.value = {};
-};
 
 const validateForm = () => {
   validationErrors.value = {};

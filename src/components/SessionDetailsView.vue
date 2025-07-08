@@ -5,10 +5,7 @@
       <p class="text-lg">Carregando Sessões...</p>
     </div>
 
-    <!-- FORMULÁRIO DE EDIÇÃO/CRIAÇÃO -->
-    <div v-else-if="isEditMode">
-      <SessionForm :session="selectedSession" @save="saveSession" @close="cancelForm" />
-    </div>
+    
 
     <!-- VISUALIZAÇÃO DE DETALHES DA SESSÃO -->
     <div v-else-if="selectedSession" class="h-full flex flex-col">
@@ -165,17 +162,13 @@ const props = defineProps({
     type: String,
     default: ''
   },
-  isEditMode: {
-    type: Boolean,
-    default: false,
-  },
   loading: {
     type: Boolean,
     default: false,
   }
 });
 
-const emit = defineEmits(['sessionUpdated', 'creationCancelled', 'startEditing']);
+const emit = defineEmits(['startEditing']);
 
 const sessionGanchosPersonagens = ref([]);
 const sessionLocaisInteressantes = ref([]);
@@ -277,22 +270,7 @@ watch(() => props.selectedSession, (newSession) => {
   }
 }, { immediate: true });
 
-const saveSession = async (sessionData) => {
-  try {
-    if (sessionData.id) {
-      await supabase.from('sessions').update(sessionData).eq('id', sessionData.id);
-    } else {
-      await supabase.from('sessions').insert(sessionData);
-    }
-    emit('sessionUpdated');
-  } catch (error) {
-    console.error("Erro ao salvar sessão:", error.message);
-  }
-};
 
-const cancelForm = () => {
-  emit('creationCancelled');
-};
 
 const formatDate = (dateString) => {
   if (!dateString) return '';

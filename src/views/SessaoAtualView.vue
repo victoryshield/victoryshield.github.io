@@ -10,12 +10,12 @@
         :entityIcon="['fas', 'scroll']"
         :showCampaignFilter="true"
         :campaigns="campaignsStore.campaigns"
-        :selectedCampaignId="campaignsStore.activeCampaign?.id"
-        @update:selectedCampaignId="campaignsStore.setActiveCampaign(campaignsStore.campaigns.find(c => c.id === $event))"
+        :selectedCampaignId="selectedCampaignId"
+        @update:selectedCampaignId="selectedCampaignId = $event"
         @selectEntity="selectSession"
         @addEntity="addSession"
-        @deleteEntity="deleteSession"
         @editEntity="editSession"
+        @deleteEntity="deleteSession"
         class="h-full overflow-y-auto"
       />
 
@@ -31,8 +31,8 @@
           v-else
           :session="sessionToEdit"
           :campaignId="campaignsStore.activeCampaign?.id"
-          @sessionUpdated="handleSessionUpdate"
-          @creationCancelled="cancelCreation"
+          @save="handleSessionUpdate"
+          @close="cancelCreation"
           class="h-full"
         />
       </div>
@@ -49,14 +49,16 @@ import { onMounted, ref, watch, nextTick } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useSessionsStore } from '../stores/sessions';
 import { useCampaignsStore } from '../stores/campaigns';
+import { useAuthStore } from '../stores/auth';
 import EntityListView from '../components/EntityListView.vue';
 import SessionDetailsView from '../components/SessionDetailsView.vue';
 import SessionForm from '../components/SessionForm.vue';
 
 const sessionsStore = useSessionsStore();
 const campaignsStore = useCampaignsStore();
+const authStore = useAuthStore();
 
-const { activeCampaign } = storeToRefs(campaignsStore);
+const selectedCampaignId = ref(null);
 
 const isEditMode = ref(false);
 const sessionToEdit = ref(null);
@@ -69,35 +71,61 @@ const selectSession = (session) => {
 };
 
 const addSession = () => {
-  sessionToEdit.value = {}; // Novo objeto para o formulário
+  sessionToEdit.value = { campaign_id: selectedCampaignId.value };
   isEditMode.value = true;
 };
 
-const editSession = (session) => {
-  sessionToEdit.value = { ...session }; // Clona a sessão para edição
+const editSession = async (session) => {
+  await sessionsStore.fetchLatestSessionWithDetails(session.campaign_id);
+  sessionToEdit.value = { ...sessionsStore.activeSession };
   isEditMode.value = true;
 };
 
 const deleteSession = async (id) => {
-  try {
-    await sessionsStore.deleteSession(id, campaignsStore.activeCampaign.id);
-    message.value = 'Sessão excluída com sucesso!';
-    messageType.value = 'success';
-    setTimeout(() => { message.value = ''; }, 3000);
-  } catch (error) {
-    message.value = `Erro ao excluir sessão: ${error.message}`;
-    messageType.value = 'error';
-    setTimeout(() => { message.value = ''; }, 5000);
+  if (confirm('Tem certeza que deseja excluir esta sessão?')) {
+    try {
+      await sessionsStore.deleteSession(id);
+      message.value = 'Sessão excluída com sucesso!';
+      messageType.value = 'success';
+      await sessionsStore.fetchSessions(selectedCampaignId.value);
+      if (sessionsStore.activeSession && sessionsStore.activeSession.id === id) {
+        sessionsStore.activeSession = null;
+      }
+      setTimeout(() => { message.value = ''; }, 3000);
+    } catch (error) {
+      message.value = `Erro ao excluir sessão: ${error.message}`;
+      messageType.value = 'error';
+      setTimeout(() => { message.value = ''; }, 5000);
+    }
   }
 };
 
-const handleSessionUpdate = async () => {
-  isEditMode.value = false;
-  sessionToEdit.value = null;
-  // A store já atualiza a lista e a sessão ativa, então não precisamos de mais nada aqui.
-  message.value = 'Sessão salva com sucesso!';
-  messageType.value = 'success';
-  setTimeout(() => { message.value = ''; }, 3000);
+const handleSessionUpdate = async (sessionData) => {
+  try {
+    if (sessionData.id) {
+      await sessionsStore.updateSession(sessionData);
+      message.value = 'Sessão atualizada com sucesso!';
+    } else {
+      await sessionsStore.addSession(sessionData);
+      message.value = 'Sessão adicionada com sucesso!';
+    }
+    messageType.value = 'success';
+    isEditMode.value = false;
+    await sessionsStore.fetchSessions(selectedCampaignId.value);
+    if (sessionsStore.sessions.length > 0) {
+      const updatedOrNewSession = sessionsStore.sessions.find(s => s.id === sessionData.id) || sessionsStore.sessions[sessionsStore.sessions.length - 1];
+      sessionsStore.activeSession = updatedOrNewSession;
+      // Fetch full details for the active session after update
+      await sessionsStore.fetchLatestSessionWithDetails(sessionsStore.activeSession.campaign_id);
+    } else {
+      sessionsStore.activeSession = null;
+    }
+  } catch (error) {
+    message.value = `Erro ao salvar sessão: ${error.message}`;
+    messageType.value = 'error';
+  } finally {
+    setTimeout(() => { message.value = ''; messageType.value = ''; }, 3000);
+  }
 };
 
 const cancelCreation = () => {
@@ -108,33 +136,44 @@ const cancelCreation = () => {
   }
 };
 
-const loadInitialData = async (campaign) => {
-  if (!campaign) {
+const loadInitialData = async () => {
+  if (!authStore.user) {
     sessionsStore.sessions = [];
     sessionsStore.activeSession = null;
     return;
   }
-  await sessionsStore.fetchSessions(campaign.id);
-  await sessionsStore.fetchLatestSessionWithDetails(campaign.id);
-  if (!sessionsStore.activeSession && sessionsStore.sessions.length > 0) {
-    // Se não houver uma sessão "mais recente" (talvez a primeira vez), seleciona a primeira da lista.
-    sessionsStore.activeSession = sessionsStore.sessions[0];
-  }
-  if (sessionsStore.sessions.length === 0) {
-    await nextTick();
-    addSession();
+
+  await campaignsStore.fetchCampaigns(authStore.user.id);
+
+  if (campaignsStore.campaigns.length > 0) {
+    selectedCampaignId.value = campaignsStore.campaigns[0].id;
+    await sessionsStore.fetchSessions(selectedCampaignId.value);
+    if (sessionsStore.sessions.length > 0) {
+      sessionsStore.activeSession = sessionsStore.sessions[0];
+    } else {
+      sessionsStore.activeSession = null;
+      addSession(); // Open form to add new session if none exist
+    }
+  } else {
+    sessionsStore.sessions = [];
+    sessionsStore.activeSession = null;
   }
 };
 
-watch(activeCampaign, (newCampaign) => {
-  loadInitialData(newCampaign);
-}, { immediate: true });
+watch(selectedCampaignId, async (newCampaignId) => {
+  if (authStore.user) {
+    await sessionsStore.fetchSessions(newCampaignId);
+    if (sessionsStore.sessions.length > 0) {
+      sessionsStore.activeSession = sessionsStore.sessions[0];
+    } else {
+      sessionsStore.activeSession = null;
+      addSession();
+    }
+  }
+});
 
 onMounted(() => {
-  if (!campaignsStore.activeCampaign && campaignsStore.campaigns.length > 0) {
-    campaignsStore.setActiveCampaign(campaignsStore.campaigns[0]);
-  }
-  loadInitialData(campaignsStore.activeCampaign);
+  loadInitialData();
 });
 
 </script>

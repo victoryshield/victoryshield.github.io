@@ -164,7 +164,7 @@
               <option v-for="p in periciasStore.pericias" :key="p.id" :value="p.id">{{ p.name }}</option>
             </select>
           </div>
-          <button type="button" @click="removePericia(index)" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center justify-center gap-x-2">
+          <button type="button" @click="removePericia(index)" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 flex items-center justify-center gap-x-2">
             <font-awesome-icon :icon="['fas', 'trash']" />
             <span>Remover</span>
           </button>
@@ -444,10 +444,7 @@ const submitForm = () => {
   dataToSave.desvantagens = dataToSave.desvantagens.filter(d => d.desvantagem_id !== null && d.desvantagem_id !== undefined);
   dataToSave.tecnicas = dataToSave.tecnicas.filter(t => t.tecnica_id !== null && t.tecnica_id !== undefined);
 
-  console.log('Data to save - Pericias:', JSON.parse(JSON.stringify(dataToSave.pericias)));
-  console.log('Data to save - Vantagens:', JSON.parse(JSON.stringify(dataToSave.vantagens)));
-  console.log('Data to save - Desvantagens:', JSON.parse(JSON.stringify(dataToSave.desvantagens)));
-  console.log('Data to save - Tecnicas:', JSON.parse(JSON.stringify(dataToSave.tecnicas)));
+  
   emit('save', dataToSave);
 };
 

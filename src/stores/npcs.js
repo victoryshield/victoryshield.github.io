@@ -63,7 +63,6 @@ export const useNpcsStore = defineStore('npcs', {
         // Insert related data
         if (pericias && pericias.length > 0) {
           const filteredPericias = pericias.filter(p => p.pericia_id !== null);
-          console.log('Filtered Pericias for insert:', filteredPericias);
           if (filteredPericias.length > 0) {
             const { error: periciasError } = await supabase
               .from('npcs_pericias')
@@ -73,7 +72,6 @@ export const useNpcsStore = defineStore('npcs', {
         }
         if (vantagens && vantagens.length > 0) {
           const filteredVantagens = vantagens.filter(v => v.vantagem_id !== null);
-          console.log('Filtered Vantagens for insert:', filteredVantagens);
           if (filteredVantagens.length > 0) {
             const { error: vantagensError } = await supabase
               .from('npcs_vantagens')
@@ -83,7 +81,6 @@ export const useNpcsStore = defineStore('npcs', {
         }
         if (desvantagens && desvantagens.length > 0) {
           const filteredDesvantagens = desvantagens.filter(d => d.desvantagem_id !== null);
-          console.log('Filtered Desvantagens for insert:', filteredDesvantagens);
           if (filteredDesvantagens.length > 0) {
             const { error: desvantagensError } = await supabase
               .from('npcs_desvantagens')
@@ -93,7 +90,6 @@ export const useNpcsStore = defineStore('npcs', {
         }
         if (tecnicas && tecnicas.length > 0) {
           const filteredTecnicas = tecnicas.filter(t => t.tecnica_id !== null);
-          console.log('Filtered Tecnicas for insert:', filteredTecnicas);
           if (filteredTecnicas.length > 0) {
             const { error: tecnicasError } = await supabase
               .from('npcs_tecnicas')
@@ -149,9 +145,7 @@ export const useNpcsStore = defineStore('npcs', {
         // Pericias
         await supabase.from('npcs_pericias').delete().eq('npc_id', id);
         if (pericias && pericias.length > 0) {
-          console.log('Raw Pericias before filter:', JSON.stringify(pericias, null, 2));
           const filteredPericias = pericias.filter(p => p.pericia_id !== null);
-          console.log('Filtered Pericias for update:', JSON.stringify(filteredPericias, null, 2));
           if (filteredPericias.length > 0) {
             const { error: periciasError } = await supabase
               .from('npcs_pericias')
@@ -163,9 +157,7 @@ export const useNpcsStore = defineStore('npcs', {
         // Vantagens
         await supabase.from('npcs_vantagens').delete().eq('npc_id', id);
         if (vantagens && vantagens.length > 0) {
-          console.log('Raw Vantagens before filter:', JSON.stringify(vantagens, null, 2));
           const filteredVantagens = vantagens.filter(v => v.vantagem_id !== null);
-          console.log('Filtered Vantagens for update:', JSON.stringify(filteredVantagens, null, 2));
           if (filteredVantagens.length > 0) {
             const { error: vantagensError } = await supabase
               .from('npcs_vantagens')
@@ -177,9 +169,7 @@ export const useNpcsStore = defineStore('npcs', {
         // Desvantagens
         await supabase.from('npcs_desvantagens').delete().eq('npc_id', id);
         if (desvantagens && desvantagens.length > 0) {
-          console.log('Raw Desvantagens before filter:', JSON.stringify(desvantagens, null, 2));
           const filteredDesvantagens = desvantagens.filter(d => d.desvantagem_id !== null);
-          console.log('Filtered Desvantagens for update:', JSON.stringify(filteredDesvantagens, null, 2));
           if (filteredDesvantagens.length > 0) {
             const { error: desvantagensError } = await supabase
               .from('npcs_desvantagens')
@@ -191,9 +181,7 @@ export const useNpcsStore = defineStore('npcs', {
         // Tecnicas
         await supabase.from('npcs_tecnicas').delete().eq('npc_id', id);
         if (tecnicas && tecnicas.length > 0) {
-          console.log('Raw Tecnicas before filter:', JSON.stringify(tecnicas, null, 2));
           const filteredTecnicas = tecnicas.filter(t => t.tecnica_id !== null);
-          console.log('Filtered Tecnicas for update:', JSON.stringify(filteredTecnicas, null, 2));
           if (filteredTecnicas.length > 0) {
             const { error: tecnicasError } = await supabase
               .from('npcs_tecnicas')

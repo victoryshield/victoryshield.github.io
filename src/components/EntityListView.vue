@@ -26,6 +26,9 @@
           <div class="flex justify-between items-center">
             <p class="font-semibold" :class="{'text-white': selectedEntity && selectedEntity.id === entity.id, 'dark:text-slate-100': selectedEntity && selectedEntity.id !== entity.id}">{{ entity.title || entity.name }}</p>
             <div class="flex gap-x-2">
+              <button v-if="nestedEntityTitle" @click.stop="$emit('addNestedEntity', entity.id)" class="text-white transition-colors duration-200">
+                <font-awesome-icon :icon="['fas', 'plus']" />
+              </button>
               <button @click.stop="$emit('editEntity', entity)" :class="{'text-white': selectedEntity && selectedEntity.id === entity.id, 'text-slate-500 hover:text-amber-600 dark:text-slate-400 dark:hover:text-amber-400': selectedEntity && selectedEntity.id !== entity.id}" class="transition-colors duration-200">
                 <font-awesome-icon :icon="['fas', 'pen-to-square']" />
               </button>
@@ -34,9 +37,25 @@
               </button>
             </div>
           </div>
+          <ul v-if="nestedEntityTitle && nestedEntitiesByParent[entity.id] && nestedEntitiesByParent[entity.id].length > 0" class="mt-2 space-y-1 pl-4 border-l border-slate-300 dark:border-slate-600">
+            <li v-for="nestedEntity in nestedEntitiesByParent[entity.id].sort((a, b) => (a.chapter_number || a.session_number || a.id) - (b.chapter_number || b.session_number || b.id))" :key="nestedEntity.id"
+                @click.stop="$emit('selectNestedEntity', nestedEntity)"
+                :class="{'bg-amber-400 dark:bg-amber-700': selectedNestedEntity && selectedNestedEntity.id === nestedEntity.id}"
+                class="p-2 rounded-md cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-600 flex justify-between items-center text-sm">
+              <span>{{ nestedEntityTitle }} {{ nestedEntity.chapter_number || nestedEntity.session_number || nestedEntity.name || nestedEntity.title }}</span>
+              <div class="flex gap-x-2">
+                <button @click.stop="$emit('editNestedEntity', nestedEntity)" class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-600">
+                  <font-awesome-icon :icon="['fas', 'pen-to-square']" />
+                </button>
+                <button @click.stop="$emit('deleteNestedEntity', nestedEntity.id)" class="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-600">
+                  <font-awesome-icon :icon="['fas', 'trash']" />
+                </button>
+              </div>
+            </li>
+          </ul>
         </li>
       </ul>
-      <button @click="$emit('addEntity')" class="w-full flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm transition-all duration-300 ease-in-out bg-amber-500 text-white font-semibold dark:text-white mt-4">
+      <button @click="$emit('addEntity')" class="w-full flex items-center justify-center gap-x-2 px-4 py-2 rounded-md shadow-sm transition-all duration-300 ease-in-out bg-amber-600 text-white font-semibold dark:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500">
         <font-awesome-icon :icon="['fas', 'plus']" />
         <span>Adicionar Novo</span>
       </button>
@@ -92,10 +111,36 @@ defineProps({
   selectedCampaignId: {
     type: Number,
     default: null
+  },
+  nestedEntitiesByParent: {
+    type: Object,
+    default: () => ({})
+  },
+  selectedNestedEntity: {
+    type: Object,
+    default: null
+  },
+  nestedEntityTitle: {
+    type: String,
+    default: ''
+  },
+  nestedEntityIcon: {
+    type: Array,
+    default: () => []
   }
 });
 
-const emit = defineEmits(['selectEntity', 'editEntity', 'deleteEntity', 'addEntity', 'update:selectedCampaignId']);
+const emit = defineEmits([
+  'selectEntity',
+  'editEntity',
+  'deleteEntity',
+  'addEntity',
+  'update:selectedCampaignId',
+  'selectNestedEntity',
+  'addNestedEntity',
+  'editNestedEntity',
+  'deleteNestedEntity'
+]);
 
 const showConfirmationModal = ref(false);
 const entityToDeleteId = ref(null);
