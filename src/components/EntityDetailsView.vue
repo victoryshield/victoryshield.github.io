@@ -118,11 +118,7 @@
       <p class="text-lg text-center text-slate-600 dark:text-slate-400">Selecione uma entidade para ver os detalhes.</p>
     </div>
 
-    <!-- Debug: Exibir objeto completo -->
-    <div v-if="selectedEntity" class="mt-8 p-4 bg-slate-100 dark:bg-slate-700 rounded-lg shadow-inner">
-      <h4 class="font-bold mb-2 text-slate-800 dark:text-slate-100">Objeto Completo (Debug):</h4>
-      <pre class="whitespace-pre-wrap break-all text-sm text-slate-700 dark:text-slate-200">{{ JSON.stringify(selectedEntity, null, 2) }}</pre>
-    </div>
+    
   </div>
 </template>
 

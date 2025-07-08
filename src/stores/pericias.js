@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+import { v4 as uuidv4 } from 'uuid';
 
 export const usePericiasStore = defineStore('pericias', () => {
   const pericias = ref([]);
@@ -16,7 +17,7 @@ export const usePericiasStore = defineStore('pericias', () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      pericias.value = data;
+      pericias.value = data.map(p => ({ ...p, id: uuidv4() })); // Assign unique ID
     } catch (err) {
       error.value = err;
       console.error('Erro ao carregar perícias:', err);
