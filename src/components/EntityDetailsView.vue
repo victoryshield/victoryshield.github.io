@@ -117,8 +117,6 @@
     <div v-else>
       <p class="text-lg text-center text-slate-600 dark:text-slate-400">Selecione uma entidade para ver os detalhes.</p>
     </div>
-
-    
   </div>
 </template>
 
