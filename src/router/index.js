@@ -9,7 +9,6 @@ import PersonagensView from '../views/PersonagensView.vue';
 import BestiarioView from '../views/BestiarioView.vue';
 import SessaoAtualView from '../views/SessaoAtualView.vue';
 import CampanhaView from '../views/CampanhaView.vue';
-import AuthView from '../views/AuthView.vue';
 import { useAuthStore } from '../stores/auth';
 
 const routes = [
@@ -19,21 +18,14 @@ const routes = [
     component: HomeView,
   },
   {
-    path: '/auth',
-    name: 'Auth',
-    component: AuthView,
-  },
-  {
     path: '/combate',
     name: 'Combate',
     component: CombateView,
-    meta: { requiresAuth: true },
   },
   {
     path: '/manobras',
     name: 'Manobras',
     component: ManobrasView,
-    meta: { requiresAuth: true },
   },
   {
     path: '/regras',
@@ -44,7 +36,6 @@ const routes = [
     path: '/mestrando',
     name: 'Mestrando',
     component: MestrandoView,
-    meta: { requiresAuth: true },
   },
   {
     path: '/personagens',
@@ -80,7 +71,6 @@ const routes = [
     path: '/testes',
     name: 'Testes',
     component: () => import('../views/TestesView.vue'),
-    meta: { requiresAuth: true },
   },
 ];
 
@@ -97,9 +87,7 @@ router.beforeEach(async (to, from, next) => {
   const isAuthenticated = !!authStore.user;
 
   if (requiresAuth && !isAuthenticated) {
-    next('/auth');
-  } else if (to.path === '/auth' && isAuthenticated) {
-    next('/personagens'); // Redirect authenticated users from auth/home to a protected route
+    next('/');
   } else {
     next();
   }
