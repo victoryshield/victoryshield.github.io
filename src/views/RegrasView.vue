@@ -4,57 +4,57 @@
         <font-awesome-icon :icon="['fas', 'book']" /><span>Regras do Jogo</span>
       </h2>
 
-      <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <ul class="flex flex-wrap -mb-px text-sm font-medium text-center gap-2" id="default-tab"
+      <div class="mb-4 flex flex-col gap-y-4">
+        <ul class="flex w-full -mb-px text-sm font-medium text-center sm:justify-start" id="default-tab"
           data-tabs-toggle="#default-tab-content" role="tablist">
-          <li class="me-2" role="presentation">
+          <li class="flex-grow sm:flex-none sm:w-auto" role="presentation">
             <button
-              class="inline-block p-4 rounded-md shadow-sm transition-all duration-300 ease-in-out flex items-center justify-center gap-x-2"
+              class="inline-block px-4 py-2 sm:p-4 rounded-md shadow-sm transition-all duration-300 ease-in-out flex items-center justify-center sm:gap-x-2"
               :class="{ 'bg-amber-500 text-white font-semibold dark:text-white': activeTab === 'pericias', 'bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:bg-amber-500 hover:text-white dark:hover:text-slate-800': activeTab !== 'pericias' }"
               @click="activeTab = 'pericias'" type="button" role="tab" aria-controls="pericias" aria-selected="true">
               <font-awesome-icon :icon="['fas', 'graduation-cap']"
                 :class="activeTab === 'pericias' ? 'text-white' : 'text-blue-600'" />
-              <span class="font-semibold">&nbsp;Perícias</span>
+              <span class="font-semibold hidden sm:inline">&nbsp;Perícias</span>
             </button>
           </li>
-          <li class="me-2" role="presentation">
+          <li class="flex-grow sm:flex-none sm:w-auto" role="presentation">
             <button
-              class="inline-block p-4 rounded-md shadow-sm transition-all duration-300 ease-in-out flex items-center justify-center gap-x-2"
+              class="inline-block px-4 py-2 sm:p-4 rounded-md shadow-sm transition-all duration-300 ease-in-out flex items-center justify-center sm:gap-x-2"
               :class="{ 'bg-amber-500 text-white font-semibold dark:text-white': activeTab === 'vantagens', 'bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:bg-amber-500 hover:text-white dark:hover:text-slate-800': activeTab !== 'vantagens' }"
               @click="activeTab = 'vantagens'" type="button" role="tab" aria-controls="vantagens" aria-selected="false">
               <font-awesome-icon :icon="['fas', 'thumbs-up']"
                 :class="activeTab === 'vantagens' ? 'text-white' : 'text-green-600'" />
-              <span class="font-semibold">&nbsp;Vantagens</span>
+              <span class="font-semibold hidden sm:inline">&nbsp;Vantagens</span>
             </button>
           </li>
-          <li class="me-2" role="presentation">
+          <li class="flex-grow sm:flex-none sm:w-auto" role="presentation">
             <button
-              class="inline-block p-4 rounded-md shadow-sm transition-all duration-300 ease-in-out flex items-center justify-center gap-x-2"
+              class="inline-block px-4 py-2 sm:p-4 rounded-md shadow-sm transition-all duration-300 ease-in-out flex items-center justify-center sm:gap-x-2"
               :class="{ 'bg-amber-500 text-white font-semibold dark:text-white': activeTab === 'desvantagens', 'bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:bg-amber-500 hover:text-white dark:hover:text-slate-800': activeTab !== 'desvantagens' }"
               @click="activeTab = 'desvantagens'" type="button" role="tab" aria-controls="desvantagens"
               aria-selected="false">
               <font-awesome-icon :icon="['fas', 'thumbs-down']"
                 :class="activeTab === 'desvantagens' ? 'text-white' : 'text-red-600'" />
-              <span class="font-semibold">&nbsp;Desvantagens</span>
+              <span class="font-semibold hidden sm:inline">&nbsp;Desvantagens</span>
             </button>
           </li>
-          <li role="presentation">
+          <li class="flex-grow sm:flex-none sm:w-auto" role="presentation">
             <button
-              class="inline-block p-4 rounded-md shadow-sm transition-all duration-300 ease-in-out flex items-center justify-center gap-x-2"
+              class="inline-block px-4 py-2 sm:p-4 rounded-md shadow-sm transition-all duration-300 ease-in-out flex items-center justify-center sm:gap-x-2"
               :class="{ 'bg-amber-500 text-white font-semibold dark:text-white': activeTab === 'tecnicas', 'bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:bg-amber-500 hover:text-white dark:hover:text-slate-800': activeTab !== 'tecnicas' }"
               @click="activeTab = 'tecnicas'" type="button" role="tab" aria-controls="tecnicas" aria-selected="false">
               <font-awesome-icon :icon="['fas', 'hat-wizard']"
                 :class="activeTab === 'tecnicas' ? 'text-white' : 'text-purple-600'" />
-              <span class="font-semibold">&nbsp;Técnicas</span>
+              <span class="font-semibold hidden sm:inline">&nbsp;Técnicas</span>
             </button>
           </li>
         </ul>
-        <div class="relative w-full sm:w-auto">
+        <div class="sm:order-2 relative w-full sm:w-auto">
           <input type="text" v-model="searchTerm" placeholder="Buscar regras..."
-            class="w-full sm:w-64 p-2 pl-10 rounded-md shadow-sm bg-white dark:bg-slate-700 text-gray-900 dark:text-white border border-gray-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500">
+            class="w-full p-2 pl-10 rounded-md shadow-sm bg-white dark:bg-slate-700 text-gray-900 dark:text-white border border-gray-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500">
           <font-awesome-icon :icon="['fas', 'search']"
             class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-          <button v-if="searchTerm" @click="clearSearch"
+          <button @click="clearSearch"
             class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
             <font-awesome-icon :icon="['fas', 'times-circle']" />
           </button>
@@ -69,7 +69,7 @@
             class="text-center text-red-500">Erro ao carregar os dados.</div>
           <div v-else-if="filteredItems.length === 0" class="text-center text-slate-500 dark:text-slate-400">Nenhum
             resultado encontrado.</div>
-          <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <div v-for="item in filteredItems" :key="item.id + item.type"
               class="p-6 rounded-lg bg-white dark:bg-slate-800 shadow-md">
               <h4 class="font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-x-2 mb-2">

@@ -105,7 +105,8 @@ import {
   faIdBadge,
   faCogs,
   faGem,
-  faImage
+  faImage,
+  faTimesCircle
 } from '@fortawesome/free-solid-svg-icons';
 
 /* add icons to the library */
@@ -202,7 +203,8 @@ library.add(
   faIdBadge,
   faCogs,
   faGem,
-  faImage
+  faImage,
+  faTimesCircle
 );
 
 const pinia = createPinia();

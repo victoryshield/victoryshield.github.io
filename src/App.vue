@@ -5,7 +5,10 @@
         <h1 class="text-3xl sm:text-4xl font-bold tracking-wider text-slate-800 dark:text-slate-100" style="font-family: 'Bangers', cursive;">Escudo do Mestre Digital</h1>
         <p class="text-lg text-slate-600 dark:text-slate-300 uppercase tracking-widest mt-1">3DeT Victory</p>
         <div class="absolute top-0 right-0 mt-2 mr-2">
-          <button @click="handleSignOut" :disabled="loading" class="flex items-center justify-center p-2 rounded-full shadow-sm transition-all duration-300 ease-in-out bg-red-600 text-white hover:bg-red-700">
+          <button v-if="!user" @click="showLoginModal = true" class="flex items-center justify-center p-2 rounded-full shadow-sm transition-all duration-300 ease-in-out bg-amber-500 text-white hover:bg-amber-600">
+            <font-awesome-icon :icon="['fas', 'sign-in-alt']" />
+          </button>
+          <button v-else @click="handleSignOut" :disabled="loading" class="flex items-center justify-center p-2 rounded-full shadow-sm transition-all duration-300 ease-in-out bg-red-600 text-white hover:bg-red-700">
             <font-awesome-icon :icon="['fas', 'sign-out-alt']" />
           </button>
         </div>
@@ -58,7 +61,7 @@
         <router-view />
       </main>
     </div>
-    
+    <LoginModal v-if="showLoginModal" @close="showLoginModal = false" />
   </div>
 </template>
 
@@ -69,7 +72,7 @@ import { useAuthStore } from './stores/auth';
 import { useCampaignsStore } from './stores/campaigns';
 import { supabase } from './services/supabase';
 import { storeToRefs } from 'pinia';
-
+import LoginModal from './components/LoginModal.vue';
 
 const route = useRoute();
 const isActive = (path) => route.path === path;
@@ -78,7 +81,7 @@ const authStore = useAuthStore();
 const { user, loading } = storeToRefs(authStore);
 
 const campaignsStore = useCampaignsStore();
-
+const showLoginModal = ref(false);
 
 const handleSignOut = async () => {
   await authStore.signOut();
