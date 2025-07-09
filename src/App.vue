@@ -14,7 +14,7 @@
         </div>
       </header>
 
-      <nav class="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-8">
+      <nav class="grid grid-cols-5 gap-2 mb-8">
         <router-link to="/" class="flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm transition-all duration-300 ease-in-out" :class="isActive('/') ? 'bg-amber-500 text-white font-semibold dark:text-white' : 'bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:bg-amber-500 hover:text-white dark:hover:text-slate-800'">
           <font-awesome-icon :icon="['fas', 'dice-d6']" />
           <span class="hidden sm:inline">Testes</span>
@@ -35,23 +35,23 @@
           <font-awesome-icon :icon="['fas', 'hat-wizard']" />
           <span class="hidden sm:inline">Mestrando</span>
         </router-link>
-        <router-link to="/personagens" class="flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm transition-all duration-300 ease-in-out" :class="isActive('/personagens') ? 'bg-amber-500 text-white font-semibold dark:text-white' : 'bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:bg-amber-500 hover:text-white dark:hover:text-slate-800'">
+        <router-link v-if="user" to="/personagens" class="flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm transition-all duration-300 ease-in-out" :class="isActive('/personagens') ? 'bg-amber-500 text-white font-semibold dark:text-white' : 'bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:bg-amber-500 hover:text-white dark:hover:text-slate-800'">
           <font-awesome-icon :icon="['fas', 'users']" />
           <span class="hidden sm:inline">Personagens</span>
         </router-link>
-        <router-link to="/npcs" class="flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm transition-all duration-300 ease-in-out" :class="isActive('/npcs') ? 'bg-amber-500 text-white font-semibold dark:text-white' : 'bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:bg-amber-500 hover:text-white dark:hover:text-slate-800'">
+        <router-link v-if="user" to="/npcs" class="flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm transition-all duration-300 ease-in-out" :class="isActive('/npcs') ? 'bg-amber-500 text-white font-semibold dark:text-white' : 'bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:bg-amber-500 hover:text-white dark:hover:text-slate-800'">
           <font-awesome-icon :icon="['fas', 'address-book']" />
           <span class="hidden sm:inline">NPCs</span>
         </router-link>
-        <router-link to="/bestiario" class="flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm transition-all duration-300 ease-in-out" :class="isActive('/bestiario') ? 'bg-amber-500 text-white font-semibold dark:text-white' : 'bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:bg-amber-500 hover:text-white dark:hover:text-slate-800'">
+        <router-link v-if="user" to="/bestiario" class="flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm transition-all duration-300 ease-in-out" :class="isActive('/bestiario') ? 'bg-amber-500 text-white font-semibold dark:text-white' : 'bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:bg-amber-500 hover:text-white dark:hover:text-slate-800'">
           <font-awesome-icon :icon="['fas', 'dragon']" />
           <span class="hidden sm:inline">Bestiário</span>
         </router-link>
-        <router-link to="/sessoes" class="flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm transition-all duration-300 ease-in-out" :class="isActive('/sessoes') ? 'bg-amber-500 text-white font-semibold dark:text-white' : 'bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:bg-amber-500 hover:text-white dark:hover:text-slate-800'">
+        <router-link v-if="user" to="/sessoes" class="flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm transition-all duration-300 ease-in-out" :class="isActive('/sessoes') ? 'bg-amber-500 text-white font-semibold dark:text-white' : 'bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:bg-amber-500 hover:text-white dark:hover:text-slate-800'">
           <font-awesome-icon :icon="['fas', 'scroll']" />
           <span class="hidden sm:inline">Sessão Atual</span>
         </router-link>
-        <router-link to="/campanha" class="flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm transition-all duration-300 ease-in-out" :class="isActive('/campanha') ? 'bg-amber-500 text-white font-semibold dark:text-white' : 'bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:bg-amber-500 hover:text-white dark:hover:text-slate-800'">
+        <router-link v-if="user" to="/campanha" class="flex items-center justify-center gap-x-2 px-4 py-2 rounded-lg shadow-sm transition-all duration-300 ease-in-out" :class="isActive('/campanha') ? 'bg-amber-500 text-white font-semibold dark:text-white' : 'bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:bg-amber-500 hover:text-white dark:hover:text-slate-800'">
           <font-awesome-icon :icon="['fas', 'book-open']" />
           <span class="hidden sm:inline">Campanha</span>
         </router-link>
